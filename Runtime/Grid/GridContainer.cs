@@ -11,7 +11,6 @@ namespace Bakery
     [Serializable]
     public class GridContainer : GridBase
     {
-
         public readonly List<RotatableGrid> Grids = new();
 
         public bool Remove(RotatableGrid grid)

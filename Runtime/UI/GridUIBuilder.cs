@@ -47,6 +47,7 @@ namespace Bakery
             Inventory.Events.Grids.OnItemAdded += OnItemAdded;
             Inventory.Events.Grids.OnItemRemoved += OnItemRemoved;
             Inventory.Events.Grids.OnItemPlaced += OnItemPlaced;
+            Inventory.Events.Grids.OnItemStacked += OnItemStacked;
             Inventory.Events.Controller.OnReleased += OnItemReleased;
             Inventory.Events.Controller.OnGrabbed += OnItemGrabbed;
             Inventory.Events.Controller.OnHighlight += OnHighlight;
@@ -58,11 +59,21 @@ namespace Bakery
             Inventory.Events.Grids.OnItemAdded -= OnItemAdded;
             Inventory.Events.Grids.OnItemRemoved -= OnItemRemoved;
             Inventory.Events.Grids.OnItemPlaced -= OnItemPlaced;
-            Inventory.Events.Controller.OnReleased -= OnItemReleased;
+            Inventory.Events.Grids.OnItemStacked -= OnItemStacked;
             Inventory.Events.Controller.OnGrabbed -= OnItemGrabbed;
             Inventory.Events.Controller.OnHighlight -= OnHighlight;
             Inventory.Events.Controller.OnCleanHighlight -= OnCleanHighlight;
             Inventory.Events.Controller.OnItemRotated -= OnItemRotated;
+        }
+
+        private void OnItemStacked(GridContainer container, RotatableGrid grid)
+        {
+            if (container.GridInfo != _gridInfo) return;
+            var gridObjectUI = _gridObjects.Find(obj => obj.Grid == grid);
+            if (gridObjectUI == null)
+                Debug.LogWarning($"GridObjectUI not found for stacked item {grid.GridInfo.name} in GridUIBuilder {this.name}", this);
+            else
+                gridObjectUI.UpdateStack();
         }
 
         private void OnItemReleased(GridObjectUI gridObjectUI, InventoryHand hand, GridCellUI cellUI)

@@ -45,10 +45,8 @@ namespace Bakery
         {
             var serialInventory = GetInventory(inventoryInfo);
             foreach (var item in inventoryItems)
-            {
                 if (serialInventory.Add(item))
                     Inventory.Events.Grids.OnItemAdded?.Invoke(serialInventory, item);
-            }
         }
 
         public void Place(RotatableGrid grabbedObject, GridInfo gridInfo, Vector2Int gridCoordinates)
@@ -56,6 +54,7 @@ namespace Bakery
             GetInventory(gridInfo).Place(grabbedObject, gridCoordinates);
             Inventory.Events.Grids.OnItemPlaced?.Invoke(GetInventory(gridInfo), grabbedObject);
         }
+
         private GridContainer GetInventory(GridInfo inventory)
         {
             var serialInventory = _containers.Find(i => i.GridInfo == inventory);
@@ -109,13 +108,32 @@ namespace Bakery
             return true;
         }
 
-        public bool Spawn(GridInfo inventoryInfo, GridInfo inventoryItems)
+        public bool Spawn(GridInfo inventoryInfo, GridInfo inventoryItem)
         {
-            var gridObject = new RotatableGrid(inventoryItems);
+            if (TryStacking(inventoryInfo, inventoryItem))
+                return true;
+
+            var gridObject = new RotatableGrid(inventoryItem);
             if (!Place(inventoryInfo, gridObject))
                 return false;
             Inventory.Events.Grids.OnItemSpawned?.Invoke(GetInventory(inventoryInfo), gridObject);
             return true;
+        }
+
+        private bool TryStacking(GridInfo inventoryInfo, GridInfo inventoryItem)
+        {
+            var serialInventory = GetInventory(inventoryInfo);
+            foreach (var item in serialInventory.Grids)
+            {
+                if (item.GridInfo == inventoryItem &&
+                    item.Stack < item.GridInfo.StackCapacity)
+                {
+                    item.Stack++;
+                    Inventory.Events.Grids.OnItemStacked?.Invoke(serialInventory, item);
+                    return true;
+                }
+            }
+            return false;
         }
 
         public bool TryGetObjectAt(GridInfo gridInfo, Vector2Int position, out RotatableGrid gridObject)

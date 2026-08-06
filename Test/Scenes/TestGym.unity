@@ -2518,7 +2518,11 @@ MonoBehaviour:
   _disable: 0
   _inventoryInfo: {fileID: 11400000, guid: 05f7b4889b8b84c9e901e9e1848f0c5f, type: 2}
   _inventoryItems:
-  - {fileID: 11400000, guid: 793933c2b47b5480fba0158fef934cfd, type: 2}
+  - {fileID: 11400000, guid: e82312656ee234cd7908d002c4f6d1e8, type: 2}
+  - {fileID: 11400000, guid: e82312656ee234cd7908d002c4f6d1e8, type: 2}
+  - {fileID: 11400000, guid: e82312656ee234cd7908d002c4f6d1e8, type: 2}
+  - {fileID: 11400000, guid: e82312656ee234cd7908d002c4f6d1e8, type: 2}
+  - {fileID: 11400000, guid: e82312656ee234cd7908d002c4f6d1e8, type: 2}
 --- !u!1 &1258868513
 GameObject:
   m_ObjectHideFlags: 0
@@ -2689,7 +2693,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -3709,6 +3713,7 @@ MonoBehaviour:
   _gridContainer:
     GridInfo: {fileID: 11400000, guid: 05f7b4889b8b84c9e901e9e1848f0c5f, type: 2}
     RootPosition: {x: 0, y: 0}
+    Stack: 0
   _gridInfo: {fileID: 11400000, guid: 793933c2b47b5480fba0158fef934cfd, type: 2}
 --- !u!4 &1964193764
 Transform:

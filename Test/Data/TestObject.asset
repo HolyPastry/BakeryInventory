@@ -19,3 +19,4 @@ MonoBehaviour:
   - {x: 2, y: 2}
   - {x: 0, y: 1}
   MaxSize: {x: 3, y: 3}
+  StackCapacity: 5

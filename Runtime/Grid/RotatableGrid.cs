@@ -21,6 +21,7 @@ namespace Bakery
             GridInfo = grabbedObject.GridInfo;
             RootPosition = grabbedObject.RootPosition;
             Rotation = grabbedObject.Rotation;
+            Stack = grabbedObject.Stack;
         }
 
         public override IEnumerable<Vector2Int> LocalPositions

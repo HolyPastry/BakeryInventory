@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,8 @@ namespace Bakery
     {
         [SerializeField] private GridInfo _gridInfo;
         [SerializeField] private Transform _background;
+        [SerializeReference] private GameObject _stackBg;
+        [SerializeReference] private TextMeshProUGUI _stackCountText;
         [SerializeReference] private GameObject CornerTopLeft;
         [SerializeReference] private GameObject CornerTopRight;
         [SerializeReference] private GameObject CornerBottomLeft;
@@ -68,12 +71,9 @@ namespace Bakery
 
         public void SetGridInfo(GridInfo gridInfo)
         {
-            _cellBgs.Clear();
-            foreach (Transform child in _background)
-            {
-                Destroy(child.gameObject);
-            }
+            CleanBackgroundTiles();
             _gridInfo = gridInfo;
+            SetupStack(null);
             foreach (var pos in _gridInfo.Coordinates)
             {
                 var cellBg = Instantiate(CellBGPrefab, _background);
@@ -84,6 +84,31 @@ namespace Bakery
                 _cellBgs.Add(cellBg);
             }
             Size = _gridInfo.MaxSize * _size;
+        }
+
+        private void CleanBackgroundTiles()
+        {
+            _cellBgs.Clear();
+            foreach (Transform child in _background)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        private void SetupStack(RotatableGrid grid)
+        {
+            if (grid != null &&
+                _gridInfo.StackCapacity > 1 &&
+                grid.Stack > 1)
+            {
+                _stackBg.SetActive(true);
+
+                _stackCountText.text = $"{grid.Stack}/{_gridInfo.StackCapacity}";
+            }
+            else
+            {
+                _stackBg.SetActive(false);
+            }
         }
 
         internal void Initialize(RotatableGrid grid, Vector2Int size)
@@ -105,6 +130,7 @@ namespace Bakery
                 Destroy(child.gameObject);
             }
             _gridInfo = grid.GridInfo;
+            SetupStack(grid);
             foreach (var pos in _grid.LocalPositions)
             {
                 var cellBg = Instantiate(CellBGPrefab, _background);
@@ -124,6 +150,11 @@ namespace Bakery
         public void UpdatePosition(Vector2 position)
         {
             transform.position = position;
+        }
+
+        internal void UpdateStack()
+        {
+            SetupStack(_grid);
         }
     }
 }

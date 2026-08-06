@@ -14,11 +14,14 @@ namespace Bakery
     {
         private SerializedProperty _serialGrid;
         private SerializedProperty _serialSize;
+        private SerializedProperty _serialStackCapacity;
 
         void OnEnable()
         {
             _serialGrid = serializedObject.FindProperty("Coordinates");
             _serialSize = serializedObject.FindProperty("MaxSize");
+            _serialStackCapacity = serializedObject.FindProperty("StackCapacity");
+
         }
 
         public override void OnInspectorGUI()
@@ -30,6 +33,8 @@ namespace Bakery
 
             GUILayout.Space(10);
             EditorGUILayout.PropertyField(_serialSize, new GUIContent("Grid Size"));
+            GUILayout.Space(10);
+            EditorGUILayout.PropertyField(_serialStackCapacity, new GUIContent("Stack Capacity"));
             GUILayout.Space(10);
             DrawGrid(script);
             serializedObject.ApplyModifiedProperties();

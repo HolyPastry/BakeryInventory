@@ -11,6 +11,8 @@ namespace Bakery
         public List<Vector2Int> Coordinates = new();
         public Vector2Int MaxSize;
 
+        public int StackCapacity;
+
         public Vector2Int Size
         {
             get

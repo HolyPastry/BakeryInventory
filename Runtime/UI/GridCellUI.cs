@@ -29,7 +29,7 @@ namespace Bakery
 
         public GridInfo GridInfo;
 
-        public GridUIBuilder GridUIBuilder { get; internal set; }
+        public GridContainerUI GridContainerUI { get; internal set; }
 
         internal void CleanHighlight()
             => image.color = _defaultColor;

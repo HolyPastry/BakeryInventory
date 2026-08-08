@@ -98,17 +98,17 @@ namespace Bakery
             return false;
         }
 
-        public bool Spawn(GridInfo inventoryInfo, List<GridInfo> inventoryItems)
+        public bool Create(GridInfo inventoryInfo, List<GridInfo> inventoryItems)
         {
             foreach (var item in inventoryItems)
             {
-                if (!Spawn(inventoryInfo, item))
+                if (!Create(inventoryInfo, item))
                     return false;
             }
             return true;
         }
 
-        public bool Spawn(GridInfo inventoryInfo, GridInfo inventoryItem)
+        public bool Create(GridInfo inventoryInfo, GridInfo inventoryItem)
         {
             if (TryStacking(inventoryInfo, inventoryItem))
                 return true;
@@ -156,13 +156,39 @@ namespace Bakery
             return false;
         }
 
-        public bool CanPlace(RotatableGrid grabbedObject, GridInfo inventory, Vector2Int gridCoordinates)
+        public bool CanPlace(RotatableGrid grabbedObject, GridInfo inventoryId, Vector2Int gridCoordinates)
         {
             var objectCopy = new RotatableGrid(grabbedObject);
-            return GetInventory(inventory).FitIn(objectCopy, gridCoordinates, objectCopy.Rotation);
+            var inventory = GetInventory(inventoryId);
+            if (inventory.CanStack(objectCopy, gridCoordinates))
+                return true;
+
+            return inventory.FitIn(objectCopy, gridCoordinates, objectCopy.Rotation);
         }
 
+        public void PickUp(RotatableGrid hoveredObject, int numToGrab, out int numGrabbed)
+        {
+            var inventory = _containers.Find(i => i.Grids.Contains(hoveredObject));
+            if (inventory == null)
+            {
+                numGrabbed = 0;
+                Debug.LogWarning($"Could not find inventory holding {hoveredObject.GridInfo.name}");
+                return;
+            }
+            inventory.PickUp(hoveredObject, numToGrab, out numGrabbed);
+        }
 
+        public bool TryPlaceAt(RotatableGrid grabbedObject, GridInfo gridInfo, Vector2Int gridCoordinates, int numToRelease, out int numReleased)
+        {
+            var inventory = GetInventory(gridInfo);
+
+            if (inventory.TryPlaceAt(grabbedObject, gridCoordinates, numToRelease, out numReleased))
+            {
+                Inventory.Events.Grids.OnItemPlaced?.Invoke(inventory, grabbedObject);
+                return true;
+            }
+            return false;
+        }
     }
 
 }

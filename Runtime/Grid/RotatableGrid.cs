@@ -115,6 +115,12 @@ namespace Bakery
         {
             RotateClockwise();
         }
+
+        internal bool CanStackWith(RotatableGrid grid)
+        {
+            return GridInfo == grid.GridInfo &&
+                Stack < GridInfo.StackCapacity;
+        }
     }
 
 }

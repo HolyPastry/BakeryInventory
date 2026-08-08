@@ -46,10 +46,25 @@ namespace Bakery
 
         public bool FitIn(RotatableGrid grid, Vector2Int coordinate, int rotation = 0)
         {
+
             grid.RootPosition = coordinate;
             grid.Rotation = rotation;
 
             return !IsOutsideGrid(grid) && OverlapsExisting(grid);
+        }
+
+        public bool CanStack(RotatableGrid grid,
+                        Vector2Int coordinate)
+        {
+            foreach (var otherItem in Grids)
+            {
+                if (otherItem.WorldPositions.Any(p => p == coordinate) &&
+                     otherItem.CanStackWith(grid))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public bool FitIn(RotatableGrid grid, Vector2Int coordinate)
@@ -116,6 +131,37 @@ namespace Bakery
             return gridObject != null;
         }
 
+        internal int StackItem(RotatableGrid grabbedObject, Vector2Int gridCoordinates)
+        {
+            var otherItem = Grids.Find(item => item.WorldPositions.Any(p => p == gridCoordinates));
+            if (otherItem == null || !otherItem.CanStackWith(grabbedObject))
+            {
+                Debug.LogWarning("No stackable item found at the specified coordinates.");
+                return grabbedObject.Stack; // Return the original amount since no stacking occurred
+            }
 
+            int availableSpace = otherItem.GridInfo.StackCapacity - otherItem.Stack;
+            int stackAmount = Math.Min(availableSpace, grabbedObject.Stack);
+
+            otherItem.Stack += stackAmount;
+            grabbedObject.Stack -= stackAmount;
+
+            Inventory.Events.Grids.OnItemStacked?.Invoke(this, otherItem);
+
+            return grabbedObject.Stack;
+        }
+
+        internal bool TryPlaceAt(RotatableGrid grabbedObject, Vector2Int gridCoordinates, int numToRelease, out int numReleased)
+        {
+            //TODO:: Logic to place at specific coordinates, considering stacking and available space
+            numReleased = 0;
+            return false;
+        }
+
+        internal void PickUp(RotatableGrid hoveredObject, int numToGrab, out int numGrabbed)
+        {
+            numGrabbed = 0;
+            //TODO:: Logic to pick up from multiple stacks of the same item if needed
+        }
     }
 }

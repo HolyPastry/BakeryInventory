@@ -14,7 +14,7 @@ namespace Bakery
         {
             yield return FlowServices.WaitUntilReady();
             yield return Inventory.Grids().WaitUntilReady;
-            Inventory.Grids().Spawn(_inventoryInfo, _inventoryItems);
+            Inventory.Grids().Create(_inventoryInfo, _inventoryItems);
         }
     }
 }

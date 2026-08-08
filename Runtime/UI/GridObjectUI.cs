@@ -30,9 +30,11 @@ namespace Bakery
         {
             get; private set;
         }
-        public bool Grabbed { get; private set; }
+        public bool Grabbed => _grid != null && _grid.Grabbed;
+        public bool FullStack => _gridInfo != null && _grid.Stack >= _gridInfo.StackCapacity;
 
-
+        public int MaxStack => _gridInfo != null ? _gridInfo.StackCapacity : 1;
+        public int Stack => _grid != null ? _grid.Stack : 0;
 
         void OnEnable()
         {
@@ -47,14 +49,15 @@ namespace Bakery
 
         public void Grab()
         {
-            Grabbed = true;
+
+            _grid.Grabbed = true;
             StopAllCoroutines();
             StartCoroutine(LateUpdateGridRoutine(Grid));
         }
 
         public void Release()
         {
-            Grabbed = false;
+            _grid.Grabbed = false;
         }
 
         private IEnumerator LateUpdateGridRoutine(RotatableGrid grid)

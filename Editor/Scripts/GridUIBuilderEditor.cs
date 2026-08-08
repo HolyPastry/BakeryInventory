@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Bakery
 {
-    [CustomEditor(typeof(GridUIBuilder))]
+    [CustomEditor(typeof(GridContainerUI))]
     public class GridUIBuilderEditor : Editor
     {
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
-            GridUIBuilder script = (GridUIBuilder)target;
+            GridContainerUI script = (GridContainerUI)target;
 
             if (GUILayout.Button("Reset Grid"))
             {

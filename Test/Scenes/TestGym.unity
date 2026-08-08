@@ -477,6 +477,7 @@ GameObject:
   m_Component:
   - component: {fileID: 146002611}
   - component: {fileID: 146002612}
+  - component: {fileID: 146002613}
   m_Layer: 5
   m_Name: Inventories
   m_TagString: Untagged
@@ -521,10 +522,26 @@ MonoBehaviour:
     type: 3}
   _releaseOne: {fileID: -7816237964394622423, guid: a8ae9211a988b4121b588d2fbe34f05d,
     type: 3}
+  _grabAll: {fileID: 0}
+  _releaseAll: {fileID: 0}
   _rotate: {fileID: 1307961706962692709, guid: a8ae9211a988b4121b588d2fbe34f05d, type: 3}
   _hand: {fileID: 1608653908}
   _interactiveCursorType: {fileID: 11400000, guid: 19d764e490b5142e8a90df9b6ba5a567,
     type: 2}
+--- !u!114 &146002613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 146002610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a58227be0612f4ffb8607b4a6925ff4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gridObjectUIPrefab: {fileID: 7472960577421793280, guid: 3d919b5f67fea4e34a317d59d2c0c162,
+    type: 3}
 --- !u!1 &179780173
 GameObject:
   m_ObjectHideFlags: 0
@@ -1286,8 +1303,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gridInfo: {fileID: 11400000, guid: 05f7b4889b8b84c9e901e9e1848f0c5f, type: 2}
   _cellPrefab: {fileID: -8804998293641630438, guid: 0e0693a1d3d3b4a60a93b4f781d2688b,
-    type: 3}
-  _gridObjectUIPrefab: {fileID: 7472960577421793280, guid: 3d919b5f67fea4e34a317d59d2c0c162,
     type: 3}
   _gridObjectUIContainer: {fileID: 16379167}
 --- !u!1 &410087039
@@ -2168,8 +2183,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gridInfo: {fileID: 11400000, guid: c3042fd99d0bb4534b9f16d2ef5049e1, type: 2}
   _cellPrefab: {fileID: -8804998293641630438, guid: 0e0693a1d3d3b4a60a93b4f781d2688b,
-    type: 3}
-  _gridObjectUIPrefab: {fileID: 7472960577421793280, guid: 3d919b5f67fea4e34a317d59d2c0c162,
     type: 3}
   _gridObjectUIContainer: {fileID: 2123985808}
 --- !u!1 &1089899018

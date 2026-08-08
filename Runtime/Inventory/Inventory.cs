@@ -17,6 +17,8 @@ namespace Bakery
                 public static Action<GridContainer, RotatableGrid> OnItemPlaced = delegate { };
 
                 public static Action<GridContainer, RotatableGrid> OnItemStacked = delegate { };
+
+                public static Action<RotatableGrid, int> OnItemStackModified = delegate { };
             }
             public static class Controller
             {
@@ -29,10 +31,21 @@ namespace Bakery
         }
         public static Func<IInventoryGridManager> Grids = UnregisterManager;
         public static Func<IInventoryController> Controller = UnregisterController;
+        public static Func<IInventorySpawner> Spawner = UnregisterSpawner;
 
         private static IInventoryGridManager _dummyManager;
         private static IInventoryController _dummyController;
+        private static IInventorySpawner _dummySpawner;
 
+        public static IInventorySpawner UnregisterSpawner()
+        {
+            Debug.Log("No Inventory Spawner registered, returning dummy spawner");
+            if (_dummySpawner == null)
+            {
+                _dummySpawner = new InventorySpawnerDummy();
+            }
+            return _dummySpawner;
+        }
         public static IInventoryController UnregisterController()
         {
             Debug.Log("No Inventory Controller registered, returning dummy controller");
@@ -52,10 +65,19 @@ namespace Bakery
             return _dummyManager;
         }
 
-
-
         internal class InventoryControllerDummy : IInventoryController
         {
+        }
+
+        internal class InventorySpawnerDummy : IInventorySpawner
+        {
+            public void Destroy(GridObjectUI gridObjectUI)
+            { }
+
+            public GridObjectUI Spawn(RectTransform parent, RotatableGrid grid, Vector2Int cellSize)
+            {
+                return null;
+            }
         }
 
         internal class InventoryGridDummyManager : IInventoryGridManager
@@ -77,9 +99,9 @@ namespace Bakery
 
             public bool IsItemIn(GridInfo inventory, RotatableGrid item)
                 => false;
-            public bool Spawn(GridInfo inventoryInfo, List<GridInfo> inventoryItems)
+            public bool Create(GridInfo inventoryInfo, List<GridInfo> inventoryItems)
                 => false;
-            public bool Spawn(GridInfo inventoryInfo, GridInfo inventoryItems)
+            public bool Create(GridInfo inventoryInfo, GridInfo inventoryItems)
                 => false;
 
             public bool TryGetObjectAt(GridInfo gridInfo, Vector2Int position, out RotatableGrid gridObject)
@@ -94,14 +116,22 @@ namespace Bakery
             public bool Remove(RotatableGrid item)
             => false;
 
-            public bool CanPlace(RotatableGrid grabbedObject, GridInfo inventory, Vector2Int gridCoordinates)
+            public void PickUp(RotatableGrid hoveredObject, int numToGrab, out int numGrabbed)
             {
-                return false;
+                numGrabbed = 0;
+                //noop
+
             }
 
-            public void Place(RotatableGrid grabbedObject, GridInfo gridInfo, Vector2Int gridCoordinates)
+            public bool TryPlaceAt(RotatableGrid grabbedObject,
+                                    GridInfo gridInfo,
+                                    Vector2Int gridCoordinates,
+                                    int numToPlace,
+                                    out int numPlaced)
             {
-
+                numPlaced = 0;
+                //noop
+                return false;
             }
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -111,6 +141,7 @@ namespace Bakery
             Events.Controller.OnHighlight = delegate { };
             Events.Controller.OnGrabbed = delegate { };
             Events.Controller.OnItemRotated = delegate { };
+            Events.Controller.OnReleased = delegate { };
 
             Events.Grids.OnItemAdded = delegate { };
             Events.Grids.OnItemPlaced = delegate { };

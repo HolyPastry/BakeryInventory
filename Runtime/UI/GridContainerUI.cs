@@ -5,11 +5,10 @@ using UnityEngine;
 
 namespace Bakery
 {
-    public class GridUIBuilder : MonoBehaviour
+    public class GridContainerUI : MonoBehaviour
     {
         [SerializeField] private GridInfo _gridInfo;
         [SerializeField] private GridCellUI _cellPrefab;
-        [SerializeField] private GridObjectUI _gridObjectUIPrefab;
         [SerializeField] private RectTransform _gridObjectUIContainer;
 
         public GridInfo GridInfo => _gridInfo;
@@ -25,7 +24,7 @@ namespace Bakery
             transform.GetComponentsInChildren(true, _cells);
             foreach (var cell in _cells)
             {
-                cell.GridUIBuilder = this;
+                cell.GridContainerUI = this;
             }
         }
 
@@ -48,8 +47,8 @@ namespace Bakery
             Inventory.Events.Grids.OnItemRemoved += OnItemRemoved;
             Inventory.Events.Grids.OnItemPlaced += OnItemPlaced;
             Inventory.Events.Grids.OnItemStacked += OnItemStacked;
-            Inventory.Events.Controller.OnReleased += OnItemReleased;
-            Inventory.Events.Controller.OnGrabbed += OnItemGrabbed;
+            Inventory.Events.Grids.OnItemStackModified += OnItemStackModified;
+
             Inventory.Events.Controller.OnHighlight += OnHighlight;
             Inventory.Events.Controller.OnCleanHighlight += OnCleanHighlight;
             Inventory.Events.Controller.OnItemRotated += OnItemRotated;
@@ -60,12 +59,21 @@ namespace Bakery
             Inventory.Events.Grids.OnItemRemoved -= OnItemRemoved;
             Inventory.Events.Grids.OnItemPlaced -= OnItemPlaced;
             Inventory.Events.Grids.OnItemStacked -= OnItemStacked;
-            Inventory.Events.Controller.OnGrabbed -= OnItemGrabbed;
+            Inventory.Events.Grids.OnItemStackModified -= OnItemStackModified;
+
             Inventory.Events.Controller.OnHighlight -= OnHighlight;
             Inventory.Events.Controller.OnCleanHighlight -= OnCleanHighlight;
             Inventory.Events.Controller.OnItemRotated -= OnItemRotated;
         }
 
+
+        private void OnItemStackModified(RotatableGrid hoveredObject, int amount)
+        {
+            var gridObjectUI = _gridObjects.Find(obj => obj.Grid == hoveredObject);
+            if (gridObjectUI == null)
+                return;
+            gridObjectUI.UpdateStack();
+        }
         private void OnItemStacked(GridContainer container, RotatableGrid grid)
         {
             if (container.GridInfo != _gridInfo) return;
@@ -80,9 +88,7 @@ namespace Bakery
         {
             if (cellUI.GridInfo != _gridInfo) return;
             _gridObjects.Add(gridObjectUI);
-            gridObjectUI.transform.SetParent(_gridObjectUIContainer, false);
-            gridObjectUI.transform.SetAsLastSibling();
-            Inventory.Grids().Place(gridObjectUI.Grid, cellUI.GridInfo, cellUI.GridCoordinates);
+
         }
 
         private void OnItemRotated(RotatableGrid grid)
@@ -132,22 +138,17 @@ namespace Bakery
                 cell.CleanHighlight();
         }
 
-        private void OnItemGrabbed(RotatableGrid grid, InventoryHand hand)
-        {
-            if (grid == null) return;
-            var gridObjectUI = _gridObjects.Find(obj => obj.Grid == grid);
-            if (gridObjectUI == null) return;
-
-            hand.Grab(gridObjectUI);
-        }
 
         private void OnItemPlaced(GridContainer container, RotatableGrid grid)
         {
             if (container.GridInfo != _gridInfo) return;
+
             var gridObjectUI = _gridObjects.Find(obj => obj.Grid == grid);
             if (gridObjectUI == null)
-                gridObjectUI = AddItemUI(container, grid);
+                gridObjectUI = AddItemUI(grid);
 
+            gridObjectUI.transform.SetParent(_gridObjectUIContainer, false);
+            gridObjectUI.transform.SetAsLastSibling();
             gridObjectUI.Place(grid);
 
         }
@@ -161,13 +162,18 @@ namespace Bakery
         private void OnItemAdded(GridContainer inventory, RotatableGrid grid)
         {
             if (inventory.GridInfo != _gridInfo) return;
-            AddItemUI(inventory, grid);
+            AddItemUI(grid);
         }
 
-        private GridObjectUI AddItemUI(GridContainer inventory, RotatableGrid grid)
+        private GridObjectUI AddItemUI(RotatableGrid grid)
         {
-            var gridObjectUI = Instantiate(_gridObjectUIPrefab, _gridObjectUIContainer);
-            gridObjectUI.Initialize(grid, _cellPrefab.Size);
+            var gridObjectUI =
+                Inventory.Spawner().Spawn(_gridObjectUIContainer, grid, _cellPrefab.Size);
+            if (gridObjectUI == null)
+            {
+                Debug.LogWarning($"GridObjectUI not found for item {grid.GridInfo.name} in GridUIBuilder {this.name}", this);
+                return null;
+            }
             _gridObjects.Add(gridObjectUI);
             return gridObjectUI;
         }
@@ -195,6 +201,14 @@ namespace Bakery
                 cell.GridInfo = _gridInfo;
                 _cells.Add(cell);
             }
+        }
+
+        internal GridObjectUI GetGridObjectUI(RotatableGrid hoveredObject)
+        {
+            var gridObjectUI = _gridObjects.Find(obj => obj.Grid == hoveredObject);
+            if (gridObjectUI == null)
+                Debug.LogWarning($"GridObjectUI not found for item {hoveredObject.GridInfo.name} in GridUIBuilder {this.name}", this);
+            return gridObjectUI;
         }
     }
 }

@@ -12,11 +12,11 @@ namespace Bakery
             public static class Grids
             {
                 public static Action<GridContainer, RotatableGrid> OnItemAdded = delegate { };
-                public static Action<GridContainer, RotatableGrid> OnItemSpawned = delegate { };
-                public static Action<GridContainer, RotatableGrid> OnItemRemoved = delegate { };
-                public static Action<GridContainer, RotatableGrid> OnItemPlaced = delegate { };
 
-                public static Action<GridContainer, RotatableGrid> OnItemStacked = delegate { };
+                public static Action<GridContainer, RotatableGrid> OnItemRemoved = delegate { };
+                // public static Action<GridContainer, RotatableGrid> OnItemPlaced = delegate { };
+
+                // public static Action<GridContainer, RotatableGrid> OnItemStacked = delegate { };
 
                 public static Action<RotatableGrid, int> OnItemStackModified = delegate { };
             }
@@ -67,6 +67,10 @@ namespace Bakery
 
         internal class InventoryControllerDummy : IInventoryController
         {
+            public void Remove(RotatableGrid hoveredObject, GridContainer gridContainer)
+            {
+
+            }
         }
 
         internal class InventorySpawnerDummy : IInventorySpawner
@@ -104,7 +108,8 @@ namespace Bakery
             public bool Create(GridInfo inventoryInfo, GridInfo inventoryItems)
                 => false;
 
-            public bool TryGetObjectAt(GridInfo gridInfo, Vector2Int position, out RotatableGrid gridObject)
+            public bool TryGetObjectAt(GridInfo gridInfo,
+                                    Vector2Int position, out RotatableGrid gridObject)
             {
                 gridObject = null;
                 return false;
@@ -116,9 +121,10 @@ namespace Bakery
             public bool Remove(RotatableGrid item)
             => false;
 
-            public void PickUp(RotatableGrid hoveredObject, int numToGrab, out int numGrabbed)
+            public void PickUp(RotatableGrid hoveredObject,
+                                int numToGrab, out RotatableGrid pickedUpGrid)
             {
-                numGrabbed = 0;
+                pickedUpGrid = null;
                 //noop
 
             }
@@ -144,9 +150,9 @@ namespace Bakery
             Events.Controller.OnReleased = delegate { };
 
             Events.Grids.OnItemAdded = delegate { };
-            Events.Grids.OnItemPlaced = delegate { };
+            // Events.Grids.OnItemPlaced = delegate { };
             Events.Grids.OnItemRemoved = delegate { };
-            Events.Grids.OnItemSpawned = delegate { };
+
 
             Controller = UnregisterController;
             Grids = UnregisterManager;

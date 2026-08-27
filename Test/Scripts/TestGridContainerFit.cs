@@ -65,7 +65,7 @@ namespace Bakery.Test
             }
             var coordinate = _gridContainer.GridInfo.Coordinates[_index];
             bool fits = _gridContainer.FitIn(_grid, _rotation, coordinate);
-            Inventory.Events.Grids.OnItemPlaced?.Invoke(_gridContainer, _grid);
+            // Inventory.Events.Grids.OnItemPlaced?.Invoke(_gridContainer, _grid);
             Debug.Log($"Testing FitIn for rotation {_rotation} at coordinate {coordinate}: {(fits ? "Fits" : "Does not fit")}");
 
         }

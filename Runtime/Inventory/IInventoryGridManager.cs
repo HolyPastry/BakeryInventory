@@ -26,7 +26,7 @@ namespace Bakery
         //void ModifyStack(RotatableGrid hoveredObject, int amount);
         //bool CanStack(RotatableGrid grabbedObject, GridInfo gridInfo, Vector2Int gridCoordinates);
         // int Stack(RotatableGrid grabbedObject, GridInfo gridInfo, Vector2Int gridCoordinates);
-        void PickUp(RotatableGrid hoveredObject, int numToGrab, out int numGrabbed);
+        void PickUp(RotatableGrid hoveredObject, int numToGrab, out RotatableGrid numGrabbed);
         bool TryPlaceAt(RotatableGrid grabbedObject, GridInfo gridInfo, Vector2Int gridCoordinates, int numToRelease, out int numReleased);
     }
 }

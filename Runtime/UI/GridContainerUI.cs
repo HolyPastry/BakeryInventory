@@ -45,8 +45,8 @@ namespace Bakery
         {
             Inventory.Events.Grids.OnItemAdded += OnItemAdded;
             Inventory.Events.Grids.OnItemRemoved += OnItemRemoved;
-            Inventory.Events.Grids.OnItemPlaced += OnItemPlaced;
-            Inventory.Events.Grids.OnItemStacked += OnItemStacked;
+            // Inventory.Events.Grids.OnItemPlaced += OnItemPlaced;
+
             Inventory.Events.Grids.OnItemStackModified += OnItemStackModified;
 
             Inventory.Events.Controller.OnHighlight += OnHighlight;
@@ -57,8 +57,8 @@ namespace Bakery
         {
             Inventory.Events.Grids.OnItemAdded -= OnItemAdded;
             Inventory.Events.Grids.OnItemRemoved -= OnItemRemoved;
-            Inventory.Events.Grids.OnItemPlaced -= OnItemPlaced;
-            Inventory.Events.Grids.OnItemStacked -= OnItemStacked;
+            //s Inventory.Events.Grids.OnItemPlaced -= OnItemPlaced;
+
             Inventory.Events.Grids.OnItemStackModified -= OnItemStackModified;
 
             Inventory.Events.Controller.OnHighlight -= OnHighlight;
@@ -150,13 +150,18 @@ namespace Bakery
             gridObjectUI.transform.SetParent(_gridObjectUIContainer, false);
             gridObjectUI.transform.SetAsLastSibling();
             gridObjectUI.Place(grid);
-
         }
 
         private void OnItemRemoved(GridContainer inventory, RotatableGrid grid)
         {
             if (inventory.GridInfo != _gridInfo) return;
-            _gridObjects.RemoveAll(obj => obj.Grid == grid);
+
+            var gridObjectUI = _gridObjects.Find(obj => obj.Grid == grid);
+            if (gridObjectUI != null)
+            {
+                _gridObjects.Remove(gridObjectUI);
+                Inventory.Spawner().Destroy(gridObjectUI);
+            }
         }
 
         private void OnItemAdded(GridContainer inventory, RotatableGrid grid)

@@ -9,6 +9,7 @@ namespace Bakery
 {
     public class GridObjectUI : MonoBehaviour, ICursorAttachable
     {
+        [SerializeField] private GameObject _hiddable;
         [SerializeField] private GridInfo _gridInfo;
         [SerializeField] private Transform _background;
         [SerializeReference] private GameObject _stackBg;
@@ -51,6 +52,9 @@ namespace Bakery
         {
 
             _grid.Grabbed = true;
+            _hiddable.SetActive(false);
+            //UpdateGrid(Grid);
+            // _hiddable.SetActive(true);
             StopAllCoroutines();
             StartCoroutine(LateUpdateGridRoutine(Grid));
         }
@@ -64,6 +68,7 @@ namespace Bakery
         {
             yield return null;
             UpdateGrid(grid);
+            _hiddable.SetActive(true);
         }
 
         private void OnItemRotated(RotatableGrid grid)

@@ -12,8 +12,6 @@ namespace Bakery
 
         public bool IsEmpty => GrabbedObject == null;
 
-
-
         public void UpdatePosition(Vector2 position)
         {
             transform.position = position;

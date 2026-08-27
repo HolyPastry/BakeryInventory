@@ -9,11 +9,12 @@ namespace Bakery
     public class RotatableGrid : GridBase
     {
         public int Rotation; // number of 90Degree Rotations ClockWise (0, 1, 2, 3)
-
+        public int Stack;
 
         public RotatableGrid(GridInfo gridInfo)
         {
             GridInfo = gridInfo;
+            Stack = 1;
         }
 
         public RotatableGrid(RotatableGrid grabbedObject)

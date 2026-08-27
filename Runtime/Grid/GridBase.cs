@@ -11,7 +11,7 @@ namespace Bakery
         public GridInfo GridInfo;
         public Vector2Int RootPosition;
 
-        public int Stack;
+
 
         protected List<Vector2Int> _worldPositionsCache = new();
 

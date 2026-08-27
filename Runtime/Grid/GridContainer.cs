@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Bakery.Core;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Bakery
 {
@@ -14,7 +13,13 @@ namespace Bakery
         public readonly List<RotatableGrid> Grids = new();
 
         public bool Remove(RotatableGrid grid)
-                => Grids.Remove(grid);
+        {
+            bool removed = Grids.Remove(grid);
+            if (removed)
+                Inventory.Events.Grids.OnItemRemoved?.Invoke(this, grid);
+
+            return removed;
+        }
 
         public bool Contains(RotatableGrid grid)
                 => Grids.Contains(grid);
@@ -24,6 +29,7 @@ namespace Bakery
             if (FitIn(grid))
             {
                 Grids.AddUnique(grid);
+                Inventory.Events.Grids.OnItemAdded?.Invoke(this, grid);
                 return true;
             }
             return false;
@@ -33,6 +39,7 @@ namespace Bakery
             if (!FitIn(grabbedObject, gridCoordinates, grabbedObject.Rotation))
                 return false;
             Grids.AddUnique(grabbedObject);
+            Inventory.Events.Grids.OnItemAdded?.Invoke(this, grabbedObject);
             return true;
         }
 
@@ -46,10 +53,8 @@ namespace Bakery
 
         public bool FitIn(RotatableGrid grid, Vector2Int coordinate, int rotation = 0)
         {
-
             grid.RootPosition = coordinate;
             grid.Rotation = rotation;
-
             return !IsOutsideGrid(grid) && OverlapsExisting(grid);
         }
 
@@ -59,7 +64,7 @@ namespace Bakery
             foreach (var otherItem in Grids)
             {
                 if (otherItem.WorldPositions.Any(p => p == coordinate) &&
-                     otherItem.CanStackWith(grid))
+                    otherItem.CanStackWith(grid))
                 {
                     return true;
                 }
@@ -90,10 +95,8 @@ namespace Bakery
         {
             grid.Rotation = rotation;
             grid.RootPosition = coordinate;
-            var placed = !IsOutsideGrid(grid) && OverlapsExisting(grid);
-            if (placed)
-                Inventory.Events.Grids.OnItemPlaced?.Invoke(this, grid);
-            return placed;
+            var fitIn = !IsOutsideGrid(grid) && OverlapsExisting(grid);
+            return fitIn;
         }
 
         private bool OverlapsExisting(RotatableGrid grid)
@@ -131,37 +134,72 @@ namespace Bakery
             return gridObject != null;
         }
 
-        internal int StackItem(RotatableGrid grabbedObject, Vector2Int gridCoordinates)
+        internal int StackItem(RotatableGrid objectToStack, Vector2Int gridCoordinates)
         {
             var otherItem = Grids.Find(item => item.WorldPositions.Any(p => p == gridCoordinates));
-            if (otherItem == null || !otherItem.CanStackWith(grabbedObject))
+            if (otherItem == null || !otherItem.CanStackWith(objectToStack))
             {
                 Debug.LogWarning("No stackable item found at the specified coordinates.");
-                return grabbedObject.Stack; // Return the original amount since no stacking occurred
+                return objectToStack.Stack; // Return the original amount since no stacking occurred
             }
 
             int availableSpace = otherItem.GridInfo.StackCapacity - otherItem.Stack;
-            int stackAmount = Math.Min(availableSpace, grabbedObject.Stack);
+            int stackAmount = Math.Min(availableSpace, objectToStack.Stack);
 
             otherItem.Stack += stackAmount;
-            grabbedObject.Stack -= stackAmount;
+            objectToStack.Stack -= stackAmount;
 
-            Inventory.Events.Grids.OnItemStacked?.Invoke(this, otherItem);
+            Inventory.Events.Grids.OnItemStackModified?.Invoke(otherItem, stackAmount);
 
-            return grabbedObject.Stack;
+            return objectToStack.Stack;
         }
 
         internal bool TryPlaceAt(RotatableGrid grabbedObject, Vector2Int gridCoordinates, int numToRelease, out int numReleased)
         {
-            //TODO:: Logic to place at specific coordinates, considering stacking and available space
-            numReleased = 0;
-            return false;
+            if (CanStack(grabbedObject, gridCoordinates))
+            {
+                var remainingStack = StackItem(grabbedObject, gridCoordinates);
+                if (remainingStack <= 0)
+                {
+                    numReleased = numToRelease;
+                    return true;
+                }
+                numReleased = numToRelease - remainingStack;
+                return true;
+            }
+
+            if (!Place(grabbedObject, gridCoordinates))
+            {
+                numReleased = 0;
+                return false;
+            }
+            numReleased = numToRelease;
+            return true;
+
         }
 
-        internal void PickUp(RotatableGrid hoveredObject, int numToGrab, out int numGrabbed)
+        internal void PickUp(RotatableGrid hoveredObject,
+                                int numToGrab,
+                                out RotatableGrid pickedUpGrid)
         {
-            numGrabbed = 0;
-            //TODO:: Logic to pick up from multiple stacks of the same item if needed
+            pickedUpGrid = null;
+            if (numToGrab <= 0)
+                return;
+
+            if (hoveredObject.Stack > numToGrab)
+            {
+                hoveredObject.Stack -= numToGrab;
+                pickedUpGrid = new RotatableGrid(hoveredObject) { Stack = numToGrab };
+                Inventory.Events.Grids.OnItemStackModified(hoveredObject, hoveredObject.Stack);
+                return;
+            }
+
+            if (hoveredObject.Stack <= numToGrab)
+            {
+                Remove(hoveredObject);
+                pickedUpGrid = hoveredObject;
+                return;
+            }
         }
     }
 }

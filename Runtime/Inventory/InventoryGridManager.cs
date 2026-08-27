@@ -35,7 +35,6 @@ namespace Bakery
         {
             if (GetInventory(inventory).Add(item))
             {
-                Inventory.Events.Grids.OnItemAdded?.Invoke(GetInventory(inventory), item);
                 return true;
             }
             return false;
@@ -43,16 +42,14 @@ namespace Bakery
 
         public void Place(GridInfo inventoryInfo, List<RotatableGrid> inventoryItems)
         {
-            var serialInventory = GetInventory(inventoryInfo);
+            var inventory = GetInventory(inventoryInfo);
             foreach (var item in inventoryItems)
-                if (serialInventory.Add(item))
-                    Inventory.Events.Grids.OnItemAdded?.Invoke(serialInventory, item);
+                inventory.Add(item);
         }
 
         public void Place(RotatableGrid grabbedObject, GridInfo gridInfo, Vector2Int gridCoordinates)
         {
             GetInventory(gridInfo).Place(grabbedObject, gridCoordinates);
-            Inventory.Events.Grids.OnItemPlaced?.Invoke(GetInventory(gridInfo), grabbedObject);
         }
 
         private GridContainer GetInventory(GridInfo inventory)
@@ -116,7 +113,6 @@ namespace Bakery
             var gridObject = new RotatableGrid(inventoryItem);
             if (!Place(inventoryInfo, gridObject))
                 return false;
-            Inventory.Events.Grids.OnItemSpawned?.Invoke(GetInventory(inventoryInfo), gridObject);
             return true;
         }
 
@@ -129,7 +125,7 @@ namespace Bakery
                     item.Stack < item.GridInfo.StackCapacity)
                 {
                     item.Stack++;
-                    Inventory.Events.Grids.OnItemStacked?.Invoke(serialInventory, item);
+                    Inventory.Events.Grids.OnItemStackModified?.Invoke(item, 1);
                     return true;
                 }
             }
@@ -166,25 +162,32 @@ namespace Bakery
             return inventory.FitIn(objectCopy, gridCoordinates, objectCopy.Rotation);
         }
 
-        public void PickUp(RotatableGrid hoveredObject, int numToGrab, out int numGrabbed)
+        public void PickUp(RotatableGrid hoveredObject,
+                            int numToGrab,
+                            out RotatableGrid pickedUpGrid)
         {
             var inventory = _containers.Find(i => i.Grids.Contains(hoveredObject));
             if (inventory == null)
             {
-                numGrabbed = 0;
+                pickedUpGrid = null;
                 Debug.LogWarning($"Could not find inventory holding {hoveredObject.GridInfo.name}");
                 return;
             }
-            inventory.PickUp(hoveredObject, numToGrab, out numGrabbed);
+            inventory.PickUp(hoveredObject, numToGrab, out pickedUpGrid);
         }
 
         public bool TryPlaceAt(RotatableGrid grabbedObject, GridInfo gridInfo, Vector2Int gridCoordinates, int numToRelease, out int numReleased)
         {
             var inventory = GetInventory(gridInfo);
-
+            if (inventory == null)
+            {
+                numReleased = 0;
+                return false;
+            }
             if (inventory.TryPlaceAt(grabbedObject, gridCoordinates, numToRelease, out numReleased))
             {
-                Inventory.Events.Grids.OnItemPlaced?.Invoke(inventory, grabbedObject);
+                // Inventory.Events.Grids.OnItemPlaced?.Invoke(inventory, grabbedObject);
+
                 return true;
             }
             return false;

@@ -522,8 +522,10 @@ MonoBehaviour:
     type: 3}
   _releaseOne: {fileID: -7816237964394622423, guid: a8ae9211a988b4121b588d2fbe34f05d,
     type: 3}
-  _grabAll: {fileID: 0}
-  _releaseAll: {fileID: 0}
+  _grabAll: {fileID: 8675610568709807957, guid: a8ae9211a988b4121b588d2fbe34f05d,
+    type: 3}
+  _releaseAll: {fileID: -8214259604443007349, guid: a8ae9211a988b4121b588d2fbe34f05d,
+    type: 3}
   _rotate: {fileID: 1307961706962692709, guid: a8ae9211a988b4121b588d2fbe34f05d, type: 3}
   _hand: {fileID: 1608653908}
   _interactiveCursorType: {fileID: 11400000, guid: 19d764e490b5142e8a90df9b6ba5a567,

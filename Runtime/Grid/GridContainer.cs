@@ -134,8 +134,10 @@ namespace Bakery
             return gridObject != null;
         }
 
-        internal int StackItem(RotatableGrid objectToStack, Vector2Int gridCoordinates)
+        internal int StackItem(RotatableGrid objectToStack, Vector2Int gridCoordinates, int numToStack = -1)
         {
+            if (numToStack == -1)
+                numToStack = objectToStack.Stack;
             var otherItem = Grids.Find(item => item.WorldPositions.Any(p => p == gridCoordinates));
             if (otherItem == null || !otherItem.CanStackWith(objectToStack))
             {
@@ -144,7 +146,7 @@ namespace Bakery
             }
 
             int availableSpace = otherItem.GridInfo.StackCapacity - otherItem.Stack;
-            int stackAmount = Math.Min(availableSpace, objectToStack.Stack);
+            int stackAmount = Math.Min(availableSpace, numToStack);
 
             otherItem.Stack += stackAmount;
             objectToStack.Stack -= stackAmount;
@@ -158,7 +160,7 @@ namespace Bakery
         {
             if (CanStack(grabbedObject, gridCoordinates))
             {
-                var remainingStack = StackItem(grabbedObject, gridCoordinates);
+                var remainingStack = StackItem(grabbedObject, gridCoordinates, numToRelease);
                 if (remainingStack <= 0)
                 {
                     numReleased = numToRelease;

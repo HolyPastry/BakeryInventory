@@ -184,13 +184,10 @@ namespace Bakery
                 numReleased = 0;
                 return false;
             }
-            if (inventory.TryPlaceAt(grabbedObject, gridCoordinates, numToRelease, out numReleased))
-            {
-                // Inventory.Events.Grids.OnItemPlaced?.Invoke(inventory, grabbedObject);
-
-                return true;
-            }
-            return false;
+            return inventory.TryPlaceAt(grabbedObject,
+                                    gridCoordinates,
+                                    numToRelease,
+                                    out numReleased);
         }
     }
 

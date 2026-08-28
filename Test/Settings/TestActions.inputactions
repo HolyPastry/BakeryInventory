@@ -12,7 +12,7 @@
                     "id": "f3ae6851-8621-499e-988b-efa9a41dd717",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "Hold",
                     "initialStateCheck": false
                 },
                 {
@@ -29,7 +29,7 @@
                     "type": "Button",
                     "id": "5ccb93b0-5990-4ff7-bd4c-507a1dcb4fe1",
                     "expectedControlType": "",
-                    "processors": "",
+                    "processors": "Invert",
                     "interactions": "",
                     "initialStateCheck": false
                 },
@@ -140,8 +140,8 @@
                 {
                     "name": "",
                     "id": "8fd99e3f-a5bb-4ca4-b55a-3c7d17eb84d0",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "Hold",
                     "processors": "",
                     "groups": "",
                     "action": "GrabAll",

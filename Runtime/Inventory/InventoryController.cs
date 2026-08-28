@@ -46,14 +46,12 @@ namespace Bakery
         void OnEnable()
         {
             Inventory.Controller = () => this;
-            // User.Events.Cursor.OnEnter += OnCursorEnter;
-            // User.Events.Cursor.OnExit += OnCursorExit;
 
             if (_releaseOne != null)
-                _releaseOne.action.performed += OnReleaseOne;
+                _releaseOne.action.canceled += OnReleaseOne;
 
             if (_grabOne != null)
-                _grabOne.action.performed += OnGrabOne;
+                _grabOne.action.canceled += OnGrabOne;
 
             if (_grabAll != null)
                 _grabAll.action.performed += OnGrabAll;
@@ -68,14 +66,12 @@ namespace Bakery
         void OnDisable()
         {
             Inventory.Controller = Inventory.UnregisterController;
-            // User.Events.Cursor.OnEnter -= OnCursorEnter;
-            // User.Events.Cursor.OnExit -= OnCursorExit;
 
             if (_grabOne != null)
-                _grabOne.action.performed -= OnGrabOne;
+                _grabOne.action.canceled -= OnGrabOne;
 
             if (_releaseOne != null)
-                _releaseOne.action.performed -= OnReleaseOne;
+                _releaseOne.action.canceled -= OnReleaseOne;
 
             if (_grabAll != null)
                 _grabAll.action.performed -= OnGrabAll;
@@ -125,8 +121,6 @@ namespace Bakery
             _inputProcessed = true;
         }
 
-
-
         private void OnReleaseAll(InputAction.CallbackContext context)
         {
             if (_inputProcessed || GrabbedObject == null) return;
@@ -134,34 +128,11 @@ namespace Bakery
             _inputProcessed = true;
         }
 
-
-
         private void OnRotate(InputAction.CallbackContext context)
         {
             if (GrabbedObject == null) return;
             GrabbedObject.Rotate();
             Inventory.Events.Controller.OnItemRotated?.Invoke(GrabbedObject);
-
-        }
-
-        private void OnCursorEnter(GameObject @object)
-        {
-            if (@object == null ||
-                @object.TryGetComponent(out _cellUI) == false)
-                return;
-
-            if (GrabbedObject != null)
-                return;
-
-            if (!Inventory.Grids().TryGetObjectAt(_cellUI.GridInfo,
-                                                    _cellUI.GridCoordinates,
-                                                    out var gridObject))
-            {
-                HighlightCells(_cellUI);
-                return;
-            }
-
-            _hoveredGrid = gridObject;
 
         }
 
@@ -173,26 +144,9 @@ namespace Bakery
                                         cellUI.GridCoordinates);
         }
 
-        private void HighlightCells(RotatableGrid grabbedObject, GridInfo gridInfo)
-        {
-            Inventory.Events.Controller.OnHighlight?.Invoke(GrabbedObject,
-                                        gridInfo,
-                                        _cellUI.GridCoordinates);
-        }
-
         private void CleanHighlight()
         {
             Inventory.Events.Controller.OnCleanHighlight?.Invoke();
-        }
-
-        private void OnCursorExit(GameObject @object)
-        {
-            if (@object == null ||
-                @object.TryGetComponent(out GridCellUI cellUI) == false)
-                return;
-            CleanHighlight();
-            _hoveredGrid = null;
-            User.Cursor().RemoveOverride();
         }
 
         private void OnGrabOne(InputAction.CallbackContext context)
@@ -215,32 +169,33 @@ namespace Bakery
         private void Release(RotatableGrid grabbedObject, int numToRelease = -1)
         {
             if (_cellUI == null || grabbedObject == null) return;
-
+            var stackBeforeRelease = grabbedObject.Stack;
             if (numToRelease == -1)
                 numToRelease = grabbedObject.Stack;
 
-            if (Inventory.Grids().TryPlaceAt(grabbedObject,
+            if (!Inventory.Grids().TryPlaceAt(grabbedObject,
                                         _cellUI.GridInfo,
                                         _cellUI.GridCoordinates,
                                         numToRelease,
                                         out int numReleased))
+                return;
+
+            if (numReleased == 0)
+                return;
+
+            if (numReleased == stackBeforeRelease)
             {
-                if (numReleased == numToRelease)
-                {
-                    var gridObjectUI = _hand.Release();
-                    Inventory.Spawner().Destroy(gridObjectUI);
-                    Inventory.Events.Controller.OnReleased?.Invoke(gridObjectUI, _hand, _cellUI);
-
-                }
-                else
-                {
-                    _hand.ModifyStack(-numReleased);
-
-                }
+                var gridObjectUI = _hand.Release();
+                Inventory.Spawner().Destroy(gridObjectUI);
+                Inventory.Events.Controller.OnReleased?.Invoke(gridObjectUI, _hand, _cellUI);
+            }
+            else
+            {
+                //just to update the number in the UI. 
+                // the grabbed object's stack has been reduced but the hand still holds it
+                _hand.ModifyStack(0);
             }
         }
-
-
 
         private void Grab(RotatableGrid hoveredObject, int numToGrab = -1)
         {

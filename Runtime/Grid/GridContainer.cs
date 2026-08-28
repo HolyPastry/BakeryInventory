@@ -34,10 +34,32 @@ namespace Bakery
             }
             return false;
         }
-        internal bool Place(RotatableGrid grabbedObject, Vector2Int gridCoordinates)
+
+        internal bool Place(RotatableGrid grabbedObject,
+                        Vector2Int gridCoordinates)
+            => Place(grabbedObject, gridCoordinates, -1, out _);
+
+        internal bool Place(RotatableGrid grabbedObject,
+                        Vector2Int gridCoordinates,
+                        int numToRelease,
+                        out int numReleased)
         {
+            numReleased = 0;
             if (!FitIn(grabbedObject, gridCoordinates, grabbedObject.Rotation))
                 return false;
+            if (numToRelease != -1 && numToRelease < grabbedObject.Stack)
+            {
+                RotatableGrid copy = new(grabbedObject)
+                {
+                    Stack = numToRelease
+                };
+                grabbedObject.Stack -= numToRelease;
+                numReleased = numToRelease;
+                Grids.AddUnique(copy);
+                Inventory.Events.Grids.OnItemAdded?.Invoke(this, copy);
+                return true;
+            }
+            numReleased = grabbedObject.Stack;
             Grids.AddUnique(grabbedObject);
             Inventory.Events.Grids.OnItemAdded?.Invoke(this, grabbedObject);
             return true;
@@ -160,22 +182,22 @@ namespace Bakery
         {
             if (CanStack(grabbedObject, gridCoordinates))
             {
+                var stackBeforeStacking = grabbedObject.Stack;
                 var remainingStack = StackItem(grabbedObject, gridCoordinates, numToRelease);
                 if (remainingStack <= 0)
                 {
                     numReleased = numToRelease;
                     return true;
                 }
-                numReleased = numToRelease - remainingStack;
+                numReleased = stackBeforeStacking - remainingStack;
                 return true;
             }
 
-            if (!Place(grabbedObject, gridCoordinates))
+            if (!Place(grabbedObject, gridCoordinates, numToRelease, out numReleased))
             {
                 numReleased = 0;
                 return false;
             }
-            numReleased = numToRelease;
             return true;
 
         }

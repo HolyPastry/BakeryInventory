@@ -8,6 +8,9 @@ namespace Bakery
     [CreateAssetMenu(fileName = "New Grid Info", menuName = "Bakery/Inventory/Grid Info")]
     public class GridInfo : ScriptableObject
     {
+        public Sprite Sprite;
+        public InventoryFilter Filter;
+
         public List<Vector2Int> Coordinates = new();
         public Vector2Int MaxSize;
 
@@ -28,6 +31,8 @@ namespace Bakery
                 return new Vector2Int(maxX - minX + 1, maxY - minY + 1);
             }
         }
+
+
     }
 
 

@@ -107,6 +107,11 @@ namespace Bakery
 
         public bool Create(GridInfo inventoryInfo, GridInfo inventoryItem)
         {
+            if (inventoryInfo.Filter != inventoryItem.Filter)
+            {
+                Debug.LogWarning($"Trying to add an incompatible item {inventoryItem} to inventory with filter {inventoryInfo.Filter}.");
+                return false;
+            }
             if (TryStacking(inventoryInfo, inventoryItem))
                 return true;
 
@@ -184,6 +189,7 @@ namespace Bakery
                 numReleased = 0;
                 return false;
             }
+
             return inventory.TryPlaceAt(grabbedObject,
                                     gridCoordinates,
                                     numToRelease,

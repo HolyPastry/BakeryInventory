@@ -7,11 +7,14 @@ using UnityEngine.UI;
 
 namespace Bakery
 {
+
+
     public class GridObjectUI : MonoBehaviour, ICursorAttachable
     {
         [SerializeField] private GameObject _hiddable;
         [SerializeField] private GridInfo _gridInfo;
         [SerializeField] private Transform _background;
+        [SerializeField] private Image _itemSprite;
         [SerializeReference] private GameObject _stackBg;
         [SerializeReference] private TextMeshProUGUI _stackCountText;
         [SerializeReference] private GameObject CornerTopLeft;
@@ -21,7 +24,7 @@ namespace Bakery
         [SerializeReference] private Image CellBGPrefab;
         private RotatableGrid _grid;
         private Vector2Int _size;
-        private readonly List<Image> _cellBgs = new();
+        private InstancePool<Image> _cellBgs;
 
         public RotatableGrid Grid => _grid;
 
@@ -36,6 +39,11 @@ namespace Bakery
 
         public int MaxStack => _gridInfo != null ? _gridInfo.StackCapacity : 1;
         public int Stack => _grid != null ? _grid.Stack : 0;
+
+        void Awake()
+        {
+            _cellBgs = new(CellBGPrefab, _background);
+        }
 
         void OnEnable()
         {
@@ -77,32 +85,6 @@ namespace Bakery
             UpdateGrid(grid);
         }
 
-        public void SetGridInfo(GridInfo gridInfo)
-        {
-            CleanBackgroundTiles();
-            _gridInfo = gridInfo;
-            SetupStack(null);
-            foreach (var pos in _gridInfo.Coordinates)
-            {
-                var cellBg = Instantiate(CellBGPrefab, _background);
-                cellBg.rectTransform.sizeDelta = new Vector2(_size.x, _size.y);
-                cellBg.rectTransform.anchoredPosition =
-                    new Vector2(pos.x * _size.x, -pos.y * _size.y);
-
-                _cellBgs.Add(cellBg);
-            }
-            Size = _gridInfo.MaxSize * _size;
-        }
-
-        private void CleanBackgroundTiles()
-        {
-            _cellBgs.Clear();
-            foreach (Transform child in _background)
-            {
-                Destroy(child.gameObject);
-            }
-        }
-
         private void SetupStack(RotatableGrid grid)
         {
             if (grid != null &&
@@ -125,6 +107,12 @@ namespace Bakery
             UpdateGrid(grid);
         }
 
+        public bool Overlaps(RectTransform rectTransform)
+        {
+            Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(this.transform, _background);
+            return bounds.Intersects(RectTransformUtility.CalculateRelativeRectTransformBounds(this.transform, rectTransform));
+        }
+
         private void UpdateGrid(RotatableGrid grid)
         {
 
@@ -133,21 +121,23 @@ namespace Bakery
             rectTransform.anchoredPosition = new Vector2(grid.RootPosition.x * _size.x,
                                                 -grid.RootPosition.y * _size.y);
 
-            foreach (Transform child in _background)
-            {
-                Destroy(child.gameObject);
-            }
             _gridInfo = grid.GridInfo;
             SetupStack(grid);
             foreach (var pos in _grid.LocalPositions)
             {
-                var cellBg = Instantiate(CellBGPrefab, _background);
+                var cellBg = _cellBgs.Add();
                 cellBg.rectTransform.sizeDelta = new Vector2(_size.x, _size.y);
                 cellBg.rectTransform.anchoredPosition =
                     new Vector2(pos.x * _size.x, -pos.y * _size.y);
-                _cellBgs.Add(cellBg);
+
             }
             Size = _gridInfo.Size * _size;
+
+            _itemSprite.sprite = _gridInfo.Sprite;
+            var cellBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(transform, _background);
+            _itemSprite.rectTransform.sizeDelta = new Vector2(cellBounds.size.x, cellBounds.size.y);
+            _itemSprite.rectTransform.anchoredPosition = new Vector2(cellBounds.center.x, cellBounds.center.y);
+
         }
 
         internal void Place(RotatableGrid grid)

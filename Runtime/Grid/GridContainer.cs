@@ -26,6 +26,8 @@ namespace Bakery
 
         public bool Add(RotatableGrid grid)
         {
+            if (!Compatible(grid))
+                return false;
             if (FitIn(grid))
             {
                 Grids.AddUnique(grid);
@@ -180,6 +182,11 @@ namespace Bakery
 
         internal bool TryPlaceAt(RotatableGrid grabbedObject, Vector2Int gridCoordinates, int numToRelease, out int numReleased)
         {
+            if (!Compatible(grabbedObject))
+            {
+                numReleased = 0;
+                return false;
+            }
             if (CanStack(grabbedObject, gridCoordinates))
             {
                 var stackBeforeStacking = grabbedObject.Stack;
@@ -200,6 +207,11 @@ namespace Bakery
             }
             return true;
 
+        }
+
+        private bool Compatible(RotatableGrid grabbedObject)
+        {
+            return GridInfo.Filter == grabbedObject.GridInfo.Filter;
         }
 
         internal void PickUp(RotatableGrid hoveredObject,

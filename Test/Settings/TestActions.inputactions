@@ -140,8 +140,8 @@
                 {
                     "name": "",
                     "id": "8fd99e3f-a5bb-4ca4-b55a-3c7d17eb84d0",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "Hold",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "GrabAll",

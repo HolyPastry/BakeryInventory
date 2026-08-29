@@ -15,6 +15,7 @@ namespace Bakery
 
         [Header("Inventory Hand")]
         [SerializeField] private InventoryHand _hand;
+        [SerializeField] private InventoryTrashUI _trash;
 
         [Header("Cursor")]
         [SerializeField] private CursorType _interactiveCursorType;
@@ -54,10 +55,10 @@ namespace Bakery
                 _grabOne.action.canceled += OnGrabOne;
 
             if (_grabAll != null)
-                _grabAll.action.performed += OnGrabAll;
+                _grabAll.action.canceled += OnGrabAll;
 
             if (_releaseAll != null)
-                _releaseAll.action.performed += OnReleaseAll;
+                _releaseAll.action.canceled += OnReleaseAll;
 
             if (_rotate != null)
                 _rotate.action.performed += OnRotate;
@@ -74,10 +75,10 @@ namespace Bakery
                 _releaseOne.action.canceled -= OnReleaseOne;
 
             if (_grabAll != null)
-                _grabAll.action.performed -= OnGrabAll;
+                _grabAll.action.canceled -= OnGrabAll;
 
             if (_releaseAll != null)
-                _releaseAll.action.performed -= OnReleaseAll;
+                _releaseAll.action.canceled -= OnReleaseAll;
 
             if (_rotate != null)
                 _rotate.action.performed -= OnRotate;
@@ -97,35 +98,42 @@ namespace Bakery
             if (hoveredObject == null ||
                 !hoveredObject.TryGetComponent<GridCellUI>(out _cellUI))
             {
-                CleanHighlight();
+                _cellUI = null;
+                _hoveredGrid = null;
+                UpdateHighlight();
                 return;
             }
 
-            if (Inventory.Grids().TryGetObjectAt(_cellUI.GridInfo,
+            Inventory.Grids().TryGetObjectAt(_cellUI.GridInfo,
                                                 _cellUI.GridCoordinates,
-                                                out _hoveredGrid))
-            {
-                CleanHighlight();
-            }
-            else
-            {
-                HighlightCells(_cellUI);
-            }
-        }
-
-        private void OnGrabAll(InputAction.CallbackContext context)
-        {
-            if (_inputProcessed || _hoveredGrid == null) return;
-
-            Grab(_hoveredGrid);
-            _inputProcessed = true;
+                                                out _hoveredGrid);
+            UpdateHighlight();
         }
 
         private void OnReleaseAll(InputAction.CallbackContext context)
         {
             if (_inputProcessed || GrabbedObject == null) return;
+
+            if (_trash != null && _trash.IsHovering)
+            {
+                Trash(GrabbedObject);
+            }
             Release(GrabbedObject);
             _inputProcessed = true;
+        }
+
+        private void Trash(RotatableGrid grabbedObject, int numToTrash = -1)
+        {
+            if (grabbedObject == null) return;
+            if (numToTrash == -1 || numToTrash >= _hand.AmountHeld)
+            {
+                var releasedObject = _hand.Release();
+                _trash.Trash();
+                Inventory.Spawner().Destroy(releasedObject);
+                return;
+            }
+
+            _hand.ModifyStack(-numToTrash);
         }
 
         private void OnRotate(InputAction.CallbackContext context)
@@ -136,17 +144,19 @@ namespace Bakery
 
         }
 
-
-        private void HighlightCells(GridCellUI cellUI)
+        private void UpdateHighlight()
         {
+            if (_cellUI == null ||
+                    (GrabbedObject != null &&
+                    _cellUI.GridInfo.Filter != GrabbedObject.GridInfo.Filter))
+            {
+                Inventory.Events.Controller.OnCleanHighlight?.Invoke();
+                return;
+            }
+
             Inventory.Events.Controller.OnHighlight?.Invoke(GrabbedObject,
-                                        cellUI.GridInfo,
-                                        cellUI.GridCoordinates);
-        }
-
-        private void CleanHighlight()
-        {
-            Inventory.Events.Controller.OnCleanHighlight?.Invoke();
+                                    _cellUI.GridInfo,
+                                    _cellUI.GridCoordinates);
         }
 
         private void OnGrabOne(InputAction.CallbackContext context)
@@ -154,13 +164,26 @@ namespace Bakery
             if (_inputProcessed || _hoveredGrid == null) return;
             if (!_hand.CanGrab(_hoveredGrid)) return;
 
-            Grab(_hoveredGrid, 1);
-            _inputProcessed = true;
+            if (Grab(_hoveredGrid, 1))
+                _inputProcessed = true;
+        }
 
+        private void OnGrabAll(InputAction.CallbackContext context)
+        {
+            if (_inputProcessed || _hoveredGrid == null) return;
+            if (!_hand.CanGrab(_hoveredGrid)) return;
+
+            if (Grab(_hoveredGrid))
+                _inputProcessed = true;
         }
         private void OnReleaseOne(InputAction.CallbackContext context)
         {
             if (_inputProcessed || GrabbedObject == null) return;
+
+            if (_trash != null && _trash.IsHovering)
+            {
+                Trash(GrabbedObject, 1);
+            }
 
             Release(GrabbedObject, 1);
             _inputProcessed = true;
@@ -197,7 +220,7 @@ namespace Bakery
             }
         }
 
-        private void Grab(RotatableGrid hoveredObject, int numToGrab = -1)
+        private bool Grab(RotatableGrid hoveredObject, int numToGrab = -1)
         {
             if (numToGrab == -1)
                 numToGrab = hoveredObject.Stack;
@@ -206,7 +229,7 @@ namespace Bakery
             // we can only grab so much
             numToGrab = _hand.NumCanGrab(hoveredObject, numToGrab);
             if (numToGrab <= 0)
-                return;
+                return false;
 
 
             Inventory.Grids().PickUp(hoveredObject, numToGrab, out RotatableGrid pickedUpObject);
@@ -218,12 +241,13 @@ namespace Bakery
                                         pickedUpObject,
                                         _cellUI.Size);
                 _hand.Grab(gridObject);
+
             }
             else
             {
                 _hand.ModifyStack(pickedUpObject.Stack);
             }
-
+            return true;
         }
     }
 }

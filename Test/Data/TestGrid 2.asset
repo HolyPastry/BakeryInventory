@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acaaaa119875a470d9d4b8d2efcd1fcd, type: 3}
   m_Name: TestGrid 2
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 0}
+  Filter: {fileID: 11400000, guid: 666b8abb4650741daa91a9fe79fab41b, type: 2}
   Coordinates:
   - {x: 2, y: 2}
   - {x: 2, y: 3}
@@ -26,4 +28,6 @@ MonoBehaviour:
   - {x: 4, y: 3}
   - {x: 0, y: 2}
   - {x: 0, y: 3}
+  - {x: 0, y: 0}
   MaxSize: {x: 5, y: 5}
+  StackCapacity: 0

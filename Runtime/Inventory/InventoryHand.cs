@@ -8,9 +8,13 @@ namespace Bakery
 {
     public class InventoryHand : MonoBehaviour, ICursorAttachable
     {
+
+
         public GridObjectUI GrabbedObject { get; private set; } = null;
 
         public bool IsEmpty => GrabbedObject == null;
+
+        public int AmountHeld => GrabbedObject == null ? 0 : GrabbedObject.Stack;
 
         public void UpdatePosition(Vector2 position)
         {
@@ -75,6 +79,12 @@ namespace Bakery
             if (GrabbedObject.Grid != hoveredObject) return 0;
 
             return Math.Min(numToGrab, GrabbedObject.MaxStack - GrabbedObject.Stack);
+        }
+
+        internal bool Hovering(RectTransform rectTransform)
+        {
+            if (IsEmpty) return false;
+            return GrabbedObject.Overlaps(rectTransform);
         }
     }
 }

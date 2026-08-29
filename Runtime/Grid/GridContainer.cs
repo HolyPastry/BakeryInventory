@@ -155,7 +155,7 @@ namespace Bakery
         internal bool TryGetObjectAt(Vector2Int position, out RotatableGrid gridObject)
         {
             gridObject = Grids.Find(grid => grid.WorldPositions.Any(p => p == position));
-            return gridObject != null;
+            return gridObject != null && !gridObject.Locked;
         }
 
         internal int StackItem(RotatableGrid objectToStack, Vector2Int gridCoordinates, int numToStack = -1)
@@ -211,7 +211,7 @@ namespace Bakery
 
         private bool Compatible(RotatableGrid grabbedObject)
         {
-            return GridInfo.Filter == grabbedObject.GridInfo.Filter;
+            return GridInfo.Compatible(grabbedObject.GridInfo);
         }
 
         internal void PickUp(RotatableGrid hoveredObject,

@@ -54,7 +54,7 @@ namespace Bakery
 
         internal bool CanGrab(RotatableGrid hoveredObject)
         {
-            if (hoveredObject == null) return false;
+            if (hoveredObject == null || hoveredObject.Locked) return false;
             if (GrabbedObject == null) return true;
             if (GrabbedObject.Grid != hoveredObject) return false;
 

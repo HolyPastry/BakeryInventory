@@ -10,14 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: acaaaa119875a470d9d4b8d2efcd1fcd, type: 3}
-  m_Name: TestObject
+  m_Name: TestLock 1
   m_EditorClassIdentifier: 
-  Sprite: {fileID: 21300000, guid: 44da1016d737342028d05cb4c3a55336, type: 3}
+  Sprite: {fileID: 21300000, guid: 94ee6f4567a854ef483807e2c65a52e3, type: 3}
   Filters: []
   Coordinates:
   - {x: 0, y: 0}
+  - {x: 1, y: 0}
+  - {x: 2, y: 0}
   - {x: 0, y: 1}
   - {x: 1, y: 1}
   - {x: 2, y: 1}
   MaxSize: {x: 3, y: 3}
-  StackCapacity: 5
+  StackCapacity: 3
+  Lock: 1

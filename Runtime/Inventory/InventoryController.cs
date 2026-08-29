@@ -89,7 +89,7 @@ namespace Bakery
             //Input events are called before the update loop
             _inputProcessed = false;
 
-            if (_hoveredGrid != null)
+            if (_hoveredGrid != null && !_hoveredGrid.Locked)
             {
                 User.Cursor().Override(_interactiveCursorType);
             }
@@ -148,7 +148,7 @@ namespace Bakery
         {
             if (_cellUI == null ||
                     (GrabbedObject != null &&
-                    _cellUI.GridInfo.Filter != GrabbedObject.GridInfo.Filter))
+                    !_cellUI.GridInfo.Compatible(GrabbedObject.GridInfo)))
             {
                 Inventory.Events.Controller.OnCleanHighlight?.Invoke();
                 return;

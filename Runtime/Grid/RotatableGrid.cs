@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Bakery
@@ -10,6 +9,8 @@ namespace Bakery
     {
         public int Rotation; // number of 90Degree Rotations ClockWise (0, 1, 2, 3)
         public int Stack;
+
+        public bool Locked => GridInfo.Lock;
 
         public RotatableGrid(GridInfo gridInfo)
         {
@@ -82,26 +83,6 @@ namespace Bakery
                 _ => throw new ArgumentException("Rotation must be between 0 and 3"),
             };
         }
-
-        // private Vector2Int GetPivot()
-        // {
-        //     // Assuming the pivot is the center of the grid
-        //     int minX = GridInfo.Coordinates.Min(pos => pos.x);
-        //     int maxX = GridInfo.Coordinates.Max(pos => pos.x);
-        //     int minY = GridInfo.Coordinates.Min(pos => pos.y);
-        //     int maxY = GridInfo.Coordinates.Max(pos => pos.y);
-
-        //     return new Vector2Int(maxX, maxY > 1 ? maxY : 1);
-        // }
-
-        public bool Overlaps(RotatableGrid other)
-        {
-            foreach (var pos in WorldPositions)
-                if (other.WorldPositions.Any(p => p == pos))
-                    return true;
-            return false;
-        }
-
 
         public void RotateClockwise()
         {

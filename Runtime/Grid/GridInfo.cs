@@ -9,12 +9,11 @@ namespace Bakery
     public class GridInfo : ScriptableObject
     {
         public Sprite Sprite;
-        public InventoryFilter Filter;
-
+        public List<InventoryFilter> Filters;
         public List<Vector2Int> Coordinates = new();
         public Vector2Int MaxSize;
-
         public int StackCapacity;
+        public bool Lock;
 
         public Vector2Int Size
         {
@@ -33,6 +32,13 @@ namespace Bakery
         }
 
 
+
+        internal bool Compatible(GridInfo gridInfo)
+        {
+            if (Filters.Count == 0 || gridInfo.Filters.Count == 0)
+                return true;
+            return Filters.Any(f => gridInfo.Filters.Contains(f));
+        }
     }
 
 

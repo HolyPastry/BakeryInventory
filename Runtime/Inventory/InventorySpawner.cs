@@ -5,6 +5,7 @@ namespace Bakery
     public class InventorySpawner : MonoBehaviour, IInventorySpawner
     {
         [SerializeField] private GridObjectUI _gridObjectUIPrefab;
+        [SerializeField] private GridObjectUI _lockedGridUIPrefab;
 
         void OnEnable()
         {
@@ -20,7 +21,8 @@ namespace Bakery
                     RotatableGrid grid,
                     Vector2Int cellSize)
         {
-            var gridObjectUI = Instantiate(_gridObjectUIPrefab, parent);
+            var prefab = grid.Locked ? _lockedGridUIPrefab : _gridObjectUIPrefab;
+            var gridObjectUI = Instantiate(prefab, parent);
             gridObjectUI.Initialize(grid, cellSize);
             return gridObjectUI;
         }

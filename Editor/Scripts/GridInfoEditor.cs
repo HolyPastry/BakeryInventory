@@ -21,30 +21,31 @@ namespace Bakery
         void OnEnable()
         {
             _serialGrid = serializedObject.FindProperty("Coordinates");
-            _serialSize = serializedObject.FindProperty("MaxSize");
-            _serialStackCapacity = serializedObject.FindProperty("StackCapacity");
-            _serialFilter = serializedObject.FindProperty("Filter");
-            _serialSprite = serializedObject.FindProperty("Sprite");
+            // _serialSize = serializedObject.FindProperty("MaxSize");
+            // _serialStackCapacity = serializedObject.FindProperty("StackCapacity");
+            //_serialFilter = serializedObject.FindProperty("Filter");
+            // _serialSprite = serializedObject.FindProperty("Sprite");
 
 
         }
 
         public override void OnInspectorGUI()
         {
+            base.OnInspectorGUI();
             serializedObject.Update();
             GridInfo script = (GridInfo)target;
 
-            GUILayout.Label(script.name);
+            // GUILayout.Label(script.name);
 
             GUILayout.Space(10);
-            EditorGUILayout.PropertyField(_serialSize, new GUIContent("Grid Size"));
-            GUILayout.Space(10);
-            EditorGUILayout.PropertyField(_serialStackCapacity, new GUIContent("Stack Capacity"));
-            GUILayout.Space(10);
-            EditorGUILayout.PropertyField(_serialFilter, new GUIContent("Filter"));
-            GUILayout.Space(10);
-            EditorGUILayout.PropertyField(_serialSprite, new GUIContent("Sprite"));
-            GUILayout.Space(10);
+            //EditorGUILayout.PropertyField(_serialSize, new GUIContent("Grid Size"));
+            // GUILayout.Space(10);
+            // EditorGUILayout.PropertyField(_serialStackCapacity, new GUIContent("Stack Capacity"));
+            // GUILayout.Space(10);
+            // EditorGUILayout.PropertyField(_serialFilter, new GUIContent("Filter"));
+            //GUILayout.Space(10);
+            //EditorGUILayout.PropertyField(_serialSprite, new GUIContent("Sprite"));
+            // GUILayout.Space(10);
             DrawGrid(script);
             serializedObject.ApplyModifiedProperties();
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -107,9 +108,9 @@ namespace Bakery
 
         public bool Create(GridInfo inventoryInfo, GridInfo inventoryItem)
         {
-            if (inventoryInfo.Filter != inventoryItem.Filter)
+            if (!inventoryInfo.Compatible(inventoryItem))
             {
-                Debug.LogWarning($"Trying to add an incompatible item {inventoryItem} to inventory with filter {inventoryInfo.Filter}.");
+                Debug.LogWarning($"Trying to add an incompatible item {inventoryItem} to inventory  {inventoryInfo}.");
                 return false;
             }
             if (TryStacking(inventoryInfo, inventoryItem))

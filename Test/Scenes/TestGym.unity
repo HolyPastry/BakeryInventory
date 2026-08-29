@@ -545,6 +545,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gridObjectUIPrefab: {fileID: 7472960577421793280, guid: 3d919b5f67fea4e34a317d59d2c0c162,
     type: 3}
+  _lockedGridUIPrefab: {fileID: 7472960577421793280, guid: 51d35389b59cd417d891d81c6f52e52b,
+    type: 3}
 --- !u!1 &179780173
 GameObject:
   m_ObjectHideFlags: 0
@@ -1638,6 +1640,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  OnTrash:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &713166378
 GameObject:
   m_ObjectHideFlags: 0
@@ -2650,7 +2655,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _runInEditorOnly: 0
-  _disable: 0
+  _disable: 1
   _inventoryInfo: {fileID: 11400000, guid: 05f7b4889b8b84c9e901e9e1848f0c5f, type: 2}
   _inventoryItems:
   - {fileID: 11400000, guid: e82312656ee234cd7908d002c4f6d1e8, type: 2}
@@ -3825,6 +3830,7 @@ GameObject:
   - component: {fileID: 1964193764}
   - component: {fileID: 1964193763}
   - component: {fileID: 1964193765}
+  - component: {fileID: 1964193766}
   m_Layer: 0
   m_Name: TestGrid
   m_TagString: Untagged
@@ -3878,6 +3884,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cc8f51639beb49e4957dc302042ff5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1964193766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964193762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f9c7388df3c54643a3837058c8687b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _locks:
+  - Position: {x: 1, y: 1}
+    GridInfo: {fileID: 11400000, guid: e90a28c595ba84ff995ea90279cded06, type: 2}
+  _inventory: {fileID: 11400000, guid: 05f7b4889b8b84c9e901e9e1848f0c5f, type: 2}
 --- !u!1 &1973899558
 GameObject:
   m_ObjectHideFlags: 0

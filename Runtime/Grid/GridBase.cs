@@ -30,13 +30,12 @@ namespace Bakery
                 return _worldPositionsCache;
             }
         }
-        public bool OverlapsWith(GridBase other)
+
+        public bool Overlaps(RotatableGrid other)
         {
             foreach (var pos in WorldPositions)
-            {
-                if (other.WorldPositions.Contains(pos))
+                if (other.WorldPositions.Any(p => p == pos))
                     return true;
-            }
             return false;
         }
 

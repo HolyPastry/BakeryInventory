@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acaaaa119875a470d9d4b8d2efcd1fcd, type: 3}
   m_Name: TestObject
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 0}
+  Filter: {fileID: 0}
   Coordinates:
   - {x: 1, y: 1}
   - {x: 1, y: 2}

@@ -135,7 +135,28 @@ namespace Bakery
 
             _itemSprite.sprite = _gridInfo.Sprite;
             var cellBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(transform, _background);
-            _itemSprite.rectTransform.sizeDelta = new Vector2(cellBounds.size.x, cellBounds.size.y);
+            switch (grid.Rotation)
+            {
+                case 0:
+                    _itemSprite.rectTransform.localRotation = Quaternion.Euler(Vector3.zero);
+                    _itemSprite.rectTransform.sizeDelta = new Vector2(cellBounds.size.x, cellBounds.size.y);
+                    break;
+                case 1:
+                    _itemSprite.rectTransform.localRotation = Quaternion.Euler(new Vector3(0, 0, 90));
+                    _itemSprite.rectTransform.sizeDelta = new Vector2(cellBounds.size.y, cellBounds.size.x);
+                    break;
+                case 2:
+                    _itemSprite.rectTransform.localRotation = Quaternion.Euler(new Vector3(0, 0, 180));
+                    _itemSprite.rectTransform.sizeDelta = new Vector2(cellBounds.size.x, cellBounds.size.y);
+                    break;
+                case 3:
+                    _itemSprite.rectTransform.localRotation = Quaternion.Euler(new Vector3(0, 0, 270));
+                    _itemSprite.rectTransform.sizeDelta = new Vector2(cellBounds.size.y, cellBounds.size.x);
+                    break;
+            }
+
+
+
             _itemSprite.rectTransform.anchoredPosition = new Vector2(cellBounds.center.x, cellBounds.center.y);
 
         }

@@ -16,6 +16,7 @@ namespace Bakery
         private SerializedProperty _serialSize;
         private SerializedProperty _serialStackCapacity;
         private SerializedProperty _serialFilter;
+        private SerializedProperty _serialSprite;
 
         void OnEnable()
         {
@@ -23,6 +24,7 @@ namespace Bakery
             _serialSize = serializedObject.FindProperty("MaxSize");
             _serialStackCapacity = serializedObject.FindProperty("StackCapacity");
             _serialFilter = serializedObject.FindProperty("Filter");
+            _serialSprite = serializedObject.FindProperty("Sprite");
 
 
         }
@@ -40,6 +42,8 @@ namespace Bakery
             EditorGUILayout.PropertyField(_serialStackCapacity, new GUIContent("Stack Capacity"));
             GUILayout.Space(10);
             EditorGUILayout.PropertyField(_serialFilter, new GUIContent("Filter"));
+            GUILayout.Space(10);
+            EditorGUILayout.PropertyField(_serialSprite, new GUIContent("Sprite"));
             GUILayout.Space(10);
             DrawGrid(script);
             serializedObject.ApplyModifiedProperties();

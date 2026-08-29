@@ -8,8 +8,8 @@ namespace Bakery
     public class InstancePool<T> : IEnumerable<T> where T : MonoBehaviour
     {
         private readonly List<T> _pool = new();
-        private T _prefab;
-        private Transform _parent;
+        private readonly T _prefab;
+        private readonly Transform _parent;
 
         public InstancePool(T prefab, Transform parent = null)
         {

@@ -1,0 +1,24 @@
+{
+    "name": "co.nhnt.bakery.inventory",
+    "version": "0.0.1",
+    "displayName": "Bakery Inventory",
+    "description": "Slot Inventory Package",
+    "unity": "2022.3",
+    "unityRelease": "62f3",
+    "hideInEditor": false,
+    "samples": [
+        {
+            "displayName": "Inventory Service Sample",
+            "description": "A few prefabs to setup a first inventory",
+            "path": "Samples~/"
+        }
+    ],
+    "keywords": [
+        "Inventory"
+    ],
+    "author": {
+        "name": "Sebastien Berton",
+        "email": "sebasti1.berton@gmail.com",
+        "url": "https://github.com/HolyPastry"
+    }
+}

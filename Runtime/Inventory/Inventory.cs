@@ -67,7 +67,22 @@ namespace Bakery
 
         internal class InventoryControllerDummy : IInventoryController
         {
-            public void Remove(RotatableGrid hoveredObject, GridContainer gridContainer)
+            public void RegisteredHand(InventoryHand hand)
+            {
+
+            }
+
+            public void RegisterTrash(InventoryTrashUI trash)
+            {
+
+            }
+
+            public void UnregisterHand(InventoryHand hand)
+            {
+
+            }
+
+            public void UnregisterTrash(InventoryTrashUI trash)
             {
 
             }

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Bakery
 {
-    public class GridCellUI : MonoBehaviour
+    public class GridCellUI : ValidatedMonoBehaviour
     {
         [SerializeField, Self] private Image image;
         [SerializeField] private Color _highlightColor;

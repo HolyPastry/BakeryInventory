@@ -22,6 +22,11 @@ namespace Bakery
             OnTrash?.Invoke();
         }
 
+        void Start()
+        {
+            Inventory.Controller().RegisterTrash(this);
+        }
+
         void Update()
         {
             bool isHovering = _hand.Hovering(_rectTransform);

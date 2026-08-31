@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Bakery.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,9 +16,7 @@ namespace Bakery
         [SerializeField] private InputActionReference _releaseAll;
         [SerializeField] private InputActionReference _rotate;
 
-        [Header("Inventory Hand")]
-        [SerializeField] private InventoryHand _hand;
-        [SerializeField] private InventoryTrashUI _trash;
+
 
         [Header("Cursor")]
         [SerializeField] private CursorType _interactiveCursorType;
@@ -31,9 +32,10 @@ namespace Bakery
             }
         }
 
+        private InventoryHand _hand;
+        private readonly List<InventoryTrashUI> _trashes = new();
 
         private GridCellUI _cellUI;
-
 
         //We use This flag to prevent multiple inputs from
         // being processed in the same frame
@@ -114,7 +116,7 @@ namespace Bakery
         {
             if (_inputProcessed || GrabbedObject == null) return;
 
-            if (_trash != null && _trash.IsHovering)
+            if (_trashes != null && _trashes.Any(t => t.IsHovering))
             {
                 Trash(GrabbedObject);
             }
@@ -125,15 +127,18 @@ namespace Bakery
         private void Trash(RotatableGrid grabbedObject, int numToTrash = -1)
         {
             if (grabbedObject == null) return;
+            var trash = _trashes.FirstOrDefault(t => t.IsHovering);
+            if (trash == null) return;
             if (numToTrash == -1 || numToTrash >= _hand.AmountHeld)
             {
                 var releasedObject = _hand.Release();
-                _trash.Trash();
+                trash.Trash();
                 Inventory.Spawner().Destroy(releasedObject);
                 return;
             }
 
             _hand.ModifyStack(-numToTrash);
+            trash.Trash();
         }
 
         private void OnRotate(InputAction.CallbackContext context)
@@ -180,7 +185,7 @@ namespace Bakery
         {
             if (_inputProcessed || GrabbedObject == null) return;
 
-            if (_trash != null && _trash.IsHovering)
+            if (_trashes != null && _trashes.Any(t => t.IsHovering))
             {
                 Trash(GrabbedObject, 1);
             }
@@ -248,6 +253,31 @@ namespace Bakery
                 _hand.ModifyStack(pickedUpObject.Stack);
             }
             return true;
+        }
+
+        public void RegisteredHand(InventoryHand hand)
+        {
+            if (_hand != null)
+            {
+                Debug.LogWarning("There only should be one inventory hand in the scene");
+                return;
+            }
+            _hand = hand;
+        }
+
+        public void UnregisterHand(InventoryHand hand)
+        {
+            _hand = null;
+        }
+
+        public void RegisterTrash(InventoryTrashUI trash)
+        {
+            _trashes.AddUnique(trash);
+        }
+
+        public void UnregisterTrash(InventoryTrashUI trash)
+        {
+            _trashes.Remove(trash);
         }
     }
 }

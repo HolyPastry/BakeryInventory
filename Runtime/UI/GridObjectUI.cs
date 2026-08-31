@@ -15,10 +15,10 @@ namespace Bakery
         [SerializeField] private Image _itemSprite;
         [SerializeReference] private GameObject _stackBg;
         [SerializeReference] private TextMeshProUGUI _stackCountText;
-        [SerializeReference] private GameObject CornerTopLeft;
-        [SerializeReference] private GameObject CornerTopRight;
-        [SerializeReference] private GameObject CornerBottomLeft;
-        [SerializeReference] private GameObject CornerBottomRight;
+        // [SerializeReference] private GameObject CornerTopLeft;
+        // [SerializeReference] private GameObject CornerTopRight;
+        // [SerializeReference] private GameObject CornerBottomLeft;
+        // [SerializeReference] private GameObject CornerBottomRight;
         [SerializeReference] private Image CellBGPrefab;
         private RotatableGrid _grid;
         private Vector2Int _size;

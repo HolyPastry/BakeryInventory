@@ -1,7 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Bakery
 {
@@ -216,4 +221,21 @@ namespace Bakery
             return gridObjectUI;
         }
     }
+
+#if UNITY_EDITOR 
+    [CustomEditor(typeof(GridContainerUI))]
+    public class GridUIBuilderEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            DrawDefaultInspector();
+            GridContainerUI script = (GridContainerUI)target;
+
+            if (GUILayout.Button("Reset Grid"))
+            {
+                script.UpdateGrid();
+            }
+        }
+    }
+#endif
 }

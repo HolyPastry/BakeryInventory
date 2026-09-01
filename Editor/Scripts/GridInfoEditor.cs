@@ -13,10 +13,10 @@ namespace Bakery
     public class GridInfoEditor : Editor
     {
         private SerializedProperty _serialGrid;
-        private SerializedProperty _serialSize;
-        private SerializedProperty _serialStackCapacity;
-        private SerializedProperty _serialFilter;
-        private SerializedProperty _serialSprite;
+        // private SerializedProperty _serialSize;
+        // private SerializedProperty _serialStackCapacity;
+        // private SerializedProperty _serialFilter;
+        // private SerializedProperty _serialSprite;
 
         void OnEnable()
         {

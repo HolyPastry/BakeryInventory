@@ -10,6 +10,7 @@ namespace Bakery
         [SerializeField] private GridInfo _gridInfo;
         [SerializeField] private GridCellUI _cellPrefab;
         [SerializeField] private RectTransform _gridObjectUIContainer;
+        [SerializeField] private RectTransform _cellsContainer;
 
         public GridInfo GridInfo => _gridInfo;
 
@@ -177,7 +178,7 @@ namespace Bakery
         public void UpdateGrid()
         {
             int i = 0;
-            transform.GetComponentsInChildren(true, _cells);
+            _cellsContainer.GetComponentsInChildren(true, _cells);
             while (i < _cells.Count)
             {
                 var cell = _cells[i];
@@ -190,7 +191,7 @@ namespace Bakery
             {
                 if (_cells.Exists(cell => cell.GridCoordinates == position))
                     continue;
-                var cell = Instantiate(_cellPrefab, transform);
+                var cell = Instantiate(_cellPrefab, _cellsContainer);
                 cell.name = $"Cell {position.x},{position.y}";
                 cell.Position = new Vector2Int(position.x * CellSize.x, -position.y * CellSize.y);
                 cell.GridCoordinates = position;

@@ -237,5 +237,31 @@ namespace Bakery
                 return;
             }
         }
+
+        internal bool Remove(GridInfo item, int amount)
+        {
+            var matchingGrids = Grids.FindAll(g => g.GridInfo == item);
+            if (matchingGrids.Count == 0) return false;
+            foreach (var grid in matchingGrids)
+            {
+                if (grid.Stack > amount)
+                {
+                    grid.Stack -= amount;
+                    Inventory.Events.Grids.OnItemStackModified?.Invoke(grid, amount);
+                    return true;
+                }
+                if (grid.Stack == amount)
+                {
+                    Remove(grid);
+                    return true;
+                }
+                if (grid.Stack < amount)
+                {
+                    amount -= grid.Stack;
+                    Remove(grid);
+                }
+            }
+            return amount == 0;
+        }
     }
 }

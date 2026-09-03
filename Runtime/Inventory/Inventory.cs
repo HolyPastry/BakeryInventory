@@ -154,6 +154,16 @@ namespace Bakery
                 //noop
                 return false;
             }
+
+            public bool Create(GridInfo inventoryInfo, GridInfo inventoryItems, int amount)
+            {
+                return false;
+            }
+
+            public bool Remove(GridInfo inventory, GridInfo item, int amount)
+            {
+                return false;
+            }
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics()

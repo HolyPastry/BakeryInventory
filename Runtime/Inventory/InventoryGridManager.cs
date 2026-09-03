@@ -96,6 +96,21 @@ namespace Bakery
             return false;
         }
 
+        public bool Remove(GridInfo inventory, GridInfo item, int amount)
+        {
+            var container = _containers.FirstOrDefault(c => c.GridInfo = inventory);
+            if (container == null)
+            {
+                Debug.LogWarning($"Container is not found: {inventory}");
+                return false;
+            }
+            return container.Remove(item, amount);
+
+
+
+        }
+
+
         public bool Create(GridInfo inventoryInfo, List<GridInfo> inventoryItems)
         {
             foreach (var item in inventoryItems)
@@ -121,6 +136,17 @@ namespace Bakery
                 return false;
             return true;
         }
+
+        public bool Create(GridInfo inventoryInfo, GridInfo inventoryItems, int amount)
+        {
+            bool success = true;
+            for (int i = 0; i < amount; i++)
+            {
+                success &= Create(inventoryInfo, inventoryItems);
+            }
+            return success;
+        }
+
 
         private bool TryStacking(GridInfo inventoryInfo, GridInfo inventoryItem)
         {
@@ -196,6 +222,8 @@ namespace Bakery
                                     numToRelease,
                                     out numReleased);
         }
+
+
     }
 
 }

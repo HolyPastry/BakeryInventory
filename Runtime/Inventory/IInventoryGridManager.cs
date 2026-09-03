@@ -14,8 +14,10 @@ namespace Bakery
 
         bool Create(GridInfo inventoryInfo, List<GridInfo> inventoryItems);
         bool Create(GridInfo inventoryInfo, GridInfo inventoryItems);
+        bool Create(GridInfo inventoryInfo, GridInfo inventoryItems, int amount);
         bool Remove(RotatableGrid item, GridInfo inventory);
         bool Remove(RotatableGrid item);
+        bool Remove(GridInfo inventory, GridInfo item, int amount);
         bool IsItemIn(GridInfo inventory, RotatableGrid item);
         IEnumerable<RotatableGrid> GetAllItems(GridInfo inventory);
         IEnumerable<RotatableGrid> GetItems(GridInfo inventory, Predicate<RotatableGrid> predicate);

@@ -7,15 +7,20 @@ using UnityEngine.InputSystem;
 
 namespace Bakery
 {
-    public class InventoryController : MonoBehaviour, IInventoryController
+    public class InventoryController : MonoBehaviour
     {
+        [Header("Local References")]
+        [SerializeReference] private InventoryHand _hand;
+        [SerializeReference] private List<InventoryTrashUI> _trashes = new();
+        [SerializeReference] private InventorySpawner _spawner;
+
+
         [Header("Input Actions")]
         [SerializeField] private InputActionReference _grabOne;
         [SerializeField] private InputActionReference _releaseOne;
         [SerializeField] private InputActionReference _grabAll;
         [SerializeField] private InputActionReference _releaseAll;
         [SerializeField] private InputActionReference _rotate;
-
 
 
         [Header("Cursor")]
@@ -32,8 +37,6 @@ namespace Bakery
             }
         }
 
-        private InventoryHand _hand;
-        private readonly List<InventoryTrashUI> _trashes = new();
 
         private GridCellUI _cellUI;
 
@@ -41,14 +44,16 @@ namespace Bakery
         // being processed in the same frame
         private bool _inputProcessed;
 
+        private List<GridContainerUI> _containers;
+
         void Awake()
         {
             _hoveredGrid = null;
+            GetComponentsInChildren(true, _containers);
         }
 
         void OnEnable()
         {
-            Inventory.Controller = () => this;
 
             if (_releaseOne != null)
                 _releaseOne.action.canceled += OnReleaseOne;
@@ -64,11 +69,13 @@ namespace Bakery
 
             if (_rotate != null)
                 _rotate.action.performed += OnRotate;
+
+            Inventory.Events.Grids.OnItemAdded += OnItemAdded;
+            Inventory.Events.Grids.OnItemRemoved += OnItemRemoved;
         }
 
         void OnDisable()
         {
-            Inventory.Controller = Inventory.UnregisterController;
 
             if (_grabOne != null)
                 _grabOne.action.canceled -= OnGrabOne;
@@ -84,6 +91,9 @@ namespace Bakery
 
             if (_rotate != null)
                 _rotate.action.performed -= OnRotate;
+
+            Inventory.Events.Grids.OnItemAdded -= OnItemAdded;
+            Inventory.Events.Grids.OnItemRemoved -= OnItemRemoved;
         }
 
         void Update()
@@ -133,7 +143,7 @@ namespace Bakery
             {
                 var releasedObject = _hand.Release();
                 trash.Trash();
-                Inventory.Spawner().Destroy(releasedObject);
+                InventorySpawner.Destroy(releasedObject);
                 return;
             }
 
@@ -214,7 +224,7 @@ namespace Bakery
             if (numReleased == stackBeforeRelease)
             {
                 var gridObjectUI = _hand.Release();
-                Inventory.Spawner().Destroy(gridObjectUI);
+                InventorySpawner.Destroy(gridObjectUI);
                 Inventory.Events.Controller.OnReleased?.Invoke(gridObjectUI, _hand, _cellUI);
             }
             else
@@ -242,7 +252,7 @@ namespace Bakery
             if (_hand.IsEmpty)
             {
 
-                GridObjectUI gridObject = Inventory.Spawner().Spawn(_hand.transform as RectTransform,
+                GridObjectUI gridObject = _spawner.Spawn(_hand.transform as RectTransform,
                                         pickedUpObject,
                                         _cellUI.Size);
                 _hand.Grab(gridObject);
@@ -255,29 +265,22 @@ namespace Bakery
             return true;
         }
 
-        public void RegisteredHand(InventoryHand hand)
+        private void OnItemRemoved(GridContainer inventory, RotatableGrid grid)
         {
-            if (_hand != null)
-            {
-                Debug.LogWarning("There only should be one inventory hand in the scene");
+
+            if (!_containers.Exists(ui => ui.GridInfo == inventory.GridInfo))
                 return;
-            }
-            _hand = hand;
+            var container = _containers.First(ui => ui.GridInfo == inventory.GridInfo);
+            container.RemoveItem(grid);
         }
 
-        public void UnregisterHand(InventoryHand hand)
+        private void OnItemAdded(GridContainer inventory, RotatableGrid grid)
         {
-            _hand = null;
-        }
+            if (!_containers.Exists(ui => ui.GridInfo == inventory.GridInfo))
+                return;
+            var container = _containers.First(ui => ui.GridInfo == inventory.GridInfo);
 
-        public void RegisterTrash(InventoryTrashUI trash)
-        {
-            _trashes.AddUnique(trash);
-        }
-
-        public void UnregisterTrash(InventoryTrashUI trash)
-        {
-            _trashes.Remove(trash);
+            container.AddItem(grid, _spawner);
         }
     }
 }

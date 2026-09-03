@@ -43,8 +43,7 @@ namespace Bakery
         }
         void OnEnable()
         {
-            Inventory.Events.Grids.OnItemAdded += OnItemAdded;
-            Inventory.Events.Grids.OnItemRemoved += OnItemRemoved;
+
             // Inventory.Events.Grids.OnItemPlaced += OnItemPlaced;
 
             Inventory.Events.Grids.OnItemStackModified += OnItemStackModified;
@@ -55,8 +54,7 @@ namespace Bakery
         }
         void OnDisable()
         {
-            Inventory.Events.Grids.OnItemAdded -= OnItemAdded;
-            Inventory.Events.Grids.OnItemRemoved -= OnItemRemoved;
+
             //s Inventory.Events.Grids.OnItemPlaced -= OnItemPlaced;
 
             Inventory.Events.Grids.OnItemStackModified -= OnItemStackModified;
@@ -139,41 +137,34 @@ namespace Bakery
         }
 
 
-        private void OnItemPlaced(GridContainer container, RotatableGrid grid)
+        // private void OnItemPlaced(GridContainer container, RotatableGrid grid)
+        // {
+        //     if (container.GridInfo != _gridInfo) return;
+
+        //     var gridObjectUI = _gridObjects.Find(obj => obj.Grid == grid);
+        //     if (gridObjectUI == null)
+        //         gridObjectUI = AddItemUI(grid);
+
+        //     gridObjectUI.transform.SetParent(_gridObjectUIContainer, false);
+        //     gridObjectUI.transform.SetAsLastSibling();
+        //     gridObjectUI.Place(grid);
+        // }
+
+        public void RemoveItem(RotatableGrid grid)
         {
-            if (container.GridInfo != _gridInfo) return;
-
-            var gridObjectUI = _gridObjects.Find(obj => obj.Grid == grid);
-            if (gridObjectUI == null)
-                gridObjectUI = AddItemUI(grid);
-
-            gridObjectUI.transform.SetParent(_gridObjectUIContainer, false);
-            gridObjectUI.transform.SetAsLastSibling();
-            gridObjectUI.Place(grid);
-        }
-
-        private void OnItemRemoved(GridContainer inventory, RotatableGrid grid)
-        {
-            if (inventory.GridInfo != _gridInfo) return;
-
             var gridObjectUI = _gridObjects.Find(obj => obj.Grid == grid);
             if (gridObjectUI != null)
             {
                 _gridObjects.Remove(gridObjectUI);
-                Inventory.Spawner().Destroy(gridObjectUI);
+                InventorySpawner.Destroy(gridObjectUI);
             }
         }
 
-        private void OnItemAdded(GridContainer inventory, RotatableGrid grid)
-        {
-            if (inventory.GridInfo != _gridInfo) return;
-            AddItemUI(grid);
-        }
 
-        private GridObjectUI AddItemUI(RotatableGrid grid)
+        public GridObjectUI AddItem(RotatableGrid grid, InventorySpawner spawner)
         {
             var gridObjectUI =
-                Inventory.Spawner().Spawn(_gridObjectUIContainer, grid, _cellPrefab.Size);
+                spawner.Spawn(_gridObjectUIContainer, grid, _cellPrefab.Size);
             if (gridObjectUI == null)
             {
                 Debug.LogWarning($"GridObjectUI not found for item {grid.GridInfo.name} in GridUIBuilder {this.name}", this);

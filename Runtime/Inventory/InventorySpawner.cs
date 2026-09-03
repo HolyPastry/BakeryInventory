@@ -2,20 +2,10 @@ using UnityEngine;
 
 namespace Bakery
 {
-    public class InventorySpawner : MonoBehaviour, IInventorySpawner
+    public class InventorySpawner : MonoBehaviour
     {
         [SerializeField] private GridObjectUI _gridObjectUIPrefab;
         [SerializeField] private GridObjectUI _lockedGridUIPrefab;
-
-        void OnEnable()
-        {
-            Inventory.Spawner = () => this;
-        }
-
-        void OnDisable()
-        {
-            Inventory.Spawner = Inventory.UnregisterSpawner;
-        }
 
         public GridObjectUI Spawn(RectTransform parent,
                     RotatableGrid grid,
@@ -27,7 +17,7 @@ namespace Bakery
             return gridObjectUI;
         }
 
-        public void Destroy(GridObjectUI gridObjectUI)
+        public static void Destroy(GridObjectUI gridObjectUI)
         {
             if (gridObjectUI == null) return;
             Destroy(gridObjectUI.gameObject);

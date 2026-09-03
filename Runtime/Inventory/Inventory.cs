@@ -30,31 +30,9 @@ namespace Bakery
             }
         }
         public static Func<IInventoryGridManager> Grids = UnregisterManager;
-        public static Func<IInventoryController> Controller = UnregisterController;
-        public static Func<IInventorySpawner> Spawner = UnregisterSpawner;
 
         private static IInventoryGridManager _dummyManager;
-        private static IInventoryController _dummyController;
-        private static IInventorySpawner _dummySpawner;
 
-        public static IInventorySpawner UnregisterSpawner()
-        {
-            Debug.Log("No Inventory Spawner registered, returning dummy spawner");
-            if (_dummySpawner == null)
-            {
-                _dummySpawner = new InventorySpawnerDummy();
-            }
-            return _dummySpawner;
-        }
-        public static IInventoryController UnregisterController()
-        {
-            Debug.Log("No Inventory Controller registered, returning dummy controller");
-            if (_dummyController == null)
-            {
-                _dummyController = new InventoryControllerDummy();
-            }
-            return _dummyController;
-        }
         public static IInventoryGridManager UnregisterManager()
         {
             Debug.Log("No Inventory Grid Manager registered, returning dummy manager");
@@ -63,40 +41,6 @@ namespace Bakery
                 _dummyManager = new InventoryGridDummyManager();
             }
             return _dummyManager;
-        }
-
-        internal class InventoryControllerDummy : IInventoryController
-        {
-            public void RegisteredHand(InventoryHand hand)
-            {
-
-            }
-
-            public void RegisterTrash(InventoryTrashUI trash)
-            {
-
-            }
-
-            public void UnregisterHand(InventoryHand hand)
-            {
-
-            }
-
-            public void UnregisterTrash(InventoryTrashUI trash)
-            {
-
-            }
-        }
-
-        internal class InventorySpawnerDummy : IInventorySpawner
-        {
-            public void Destroy(GridObjectUI gridObjectUI)
-            { }
-
-            public GridObjectUI Spawn(RectTransform parent, RotatableGrid grid, Vector2Int cellSize)
-            {
-                return null;
-            }
         }
 
         internal class InventoryGridDummyManager : IInventoryGridManager
@@ -178,8 +122,6 @@ namespace Bakery
             // Events.Grids.OnItemPlaced = delegate { };
             Events.Grids.OnItemRemoved = delegate { };
 
-
-            Controller = UnregisterController;
             Grids = UnregisterManager;
 
             Debug.Log("[Inventory] Static fields reset (domain reload skipped)");

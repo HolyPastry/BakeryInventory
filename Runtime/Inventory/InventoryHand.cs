@@ -16,23 +16,6 @@ namespace Bakery
 
         public int AmountHeld => GrabbedObject == null ? 0 : GrabbedObject.Stack;
 
-
-        void OnEnable()
-        {
-            if (_initialized)
-                Inventory.Controller().RegisteredHand(this);
-        }
-
-        void OnDisable()
-        {
-            Inventory.Controller().UnregisterHand(this);
-        }
-
-        void Start()
-        {
-            Inventory.Controller().RegisteredHand(this);
-            _initialized = true;
-        }
         public void UpdatePosition(Vector2 position)
         {
             transform.position = position;

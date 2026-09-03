@@ -207,5 +207,16 @@ namespace Bakery
                 Debug.LogWarning($"GridObjectUI not found for item {hoveredObject.GridInfo.name} in GridUIBuilder {this.name}", this);
             return gridObjectUI;
         }
+
+        internal void Clear()
+        {
+
+            while (_gridObjects.Count > 0)
+            {
+                var grid = _gridObjects[0];
+                _gridObjects.Remove(grid);
+                InventorySpawner.Destroy(grid);
+            }
+        }
     }
 }

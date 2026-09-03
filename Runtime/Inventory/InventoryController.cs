@@ -72,6 +72,20 @@ namespace Bakery
 
             Inventory.Events.Grids.OnItemAdded += OnItemAdded;
             Inventory.Events.Grids.OnItemRemoved += OnItemRemoved;
+
+            UpdateGrids();
+        }
+
+        private void UpdateGrids()
+        {
+            foreach (var container in _containers)
+            {
+                var items = Inventory.Grids().GetAllItems(container.GridInfo);
+                foreach (var item in items)
+                {
+                    container.AddItem(item, _spawner);
+                }
+            }
         }
 
         void OnDisable()
@@ -94,6 +108,16 @@ namespace Bakery
 
             Inventory.Events.Grids.OnItemAdded -= OnItemAdded;
             Inventory.Events.Grids.OnItemRemoved -= OnItemRemoved;
+
+            CleanGrids();
+        }
+
+        private void CleanGrids()
+        {
+            foreach (var container in _containers)
+            {
+                container.Clear();
+            }
         }
 
         void Update()

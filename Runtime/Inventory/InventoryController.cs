@@ -44,7 +44,7 @@ namespace Bakery
         // being processed in the same frame
         private bool _inputProcessed;
 
-        private List<GridContainerUI> _containers;
+        private List<GridContainerUI> _containers = new();
 
         void Awake()
         {

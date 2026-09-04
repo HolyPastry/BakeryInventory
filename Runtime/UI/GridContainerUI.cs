@@ -165,7 +165,7 @@ namespace Bakery
         public GridObjectUI AddItem(RotatableGrid grid, InventorySpawner spawner)
         {
             var gridObjectUI =
-                spawner.Spawn(_gridObjectUIContainer, grid, _cellPrefab.Size);
+                spawner.Spawn(_gridObjectUIContainer, grid);
             if (gridObjectUI == null)
             {
                 Debug.LogWarning($"GridObjectUI not found for item {grid.GridInfo.name} in GridUIBuilder {this.name}", this);

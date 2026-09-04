@@ -8,12 +8,11 @@ namespace Bakery
         [SerializeField] private GridObjectUI _lockedGridUIPrefab;
 
         public GridObjectUI Spawn(RectTransform parent,
-                    RotatableGrid grid,
-                    Vector2Int cellSize)
+                    RotatableGrid grid)
         {
             var prefab = grid.Locked ? _lockedGridUIPrefab : _gridObjectUIPrefab;
             var gridObjectUI = Instantiate(prefab, parent);
-            gridObjectUI.Initialize(grid, cellSize);
+            gridObjectUI.Initialize(grid);
             return gridObjectUI;
         }
 

@@ -301,8 +301,7 @@ namespace Bakery
         private void CreateInHand(RotatableGrid pickedUpObject)
         {
             GridObjectUI gridObject = _spawner.Spawn(_hand.transform as RectTransform,
-                                                    pickedUpObject,
-                                                    _cellUI.Size);
+                                                    pickedUpObject);
             _hand.Grab(gridObject);
         }
 

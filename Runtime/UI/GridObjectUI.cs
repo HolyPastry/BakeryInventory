@@ -15,13 +15,13 @@ namespace Bakery
         [SerializeField] private Image _itemSprite;
         [SerializeReference] private GameObject _stackBg;
         [SerializeReference] private TextMeshProUGUI _stackCountText;
-        // [SerializeReference] private GameObject CornerTopLeft;
-        // [SerializeReference] private GameObject CornerTopRight;
-        // [SerializeReference] private GameObject CornerBottomLeft;
-        // [SerializeReference] private GameObject CornerBottomRight;
         [SerializeReference] private Image CellBGPrefab;
+
+
         private RotatableGrid _grid;
-        private Vector2Int _size;
+        private Vector2Int CellSize => CellBGPrefab == null ?
+                        Vector2Int.zero : new Vector2Int((int)CellBGPrefab.rectTransform.sizeDelta.x,
+                                                        (int)CellBGPrefab.rectTransform.sizeDelta.y);
         private InstancePool<Image> _cellBgs;
 
         public RotatableGrid Grid => _grid;
@@ -99,9 +99,8 @@ namespace Bakery
             }
         }
 
-        internal void Initialize(RotatableGrid grid, Vector2Int size)
+        internal void Initialize(RotatableGrid grid)
         {
-            _size = size;
             UpdateGrid(grid);
         }
 
@@ -116,20 +115,20 @@ namespace Bakery
 
             _grid = grid;
             _cellBgs.Clear();
-            rectTransform.anchoredPosition = new Vector2(grid.RootPosition.x * _size.x,
-                                                -grid.RootPosition.y * _size.y);
+            rectTransform.anchoredPosition = new Vector2(grid.RootPosition.x * CellSize.x,
+                                                -grid.RootPosition.y * CellSize.y);
 
             _gridInfo = grid.GridInfo;
             SetupStack(grid);
             foreach (var pos in _grid.LocalPositions)
             {
                 var cellBg = _cellBgs.Add();
-                cellBg.rectTransform.sizeDelta = new Vector2(_size.x, _size.y);
+                cellBg.rectTransform.sizeDelta = new Vector2(CellSize.x, CellSize.y);
                 cellBg.rectTransform.anchoredPosition =
-                    new Vector2(pos.x * _size.x, -pos.y * _size.y);
+                    new Vector2(pos.x * CellSize.x, -pos.y * CellSize.y);
 
             }
-            Size = _gridInfo.Size * _size;
+            Size = _gridInfo.Size * CellSize;
 
             _itemSprite.sprite = _gridInfo.Sprite;
 

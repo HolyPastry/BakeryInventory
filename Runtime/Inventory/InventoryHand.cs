@@ -40,10 +40,12 @@ namespace Bakery
         private IEnumerator DelayedAttach(GridObjectUI gridObjectUI)
         {
             yield return new WaitForEndOfFrame();
-            GrabbedObject = gridObjectUI;
+
             gridObjectUI.transform.SetParent(this.transform, true);
             gridObjectUI.transform.localPosition =
                 new Vector2(-gridObjectUI.Size.x / 2, gridObjectUI.Size.y);
+            yield return null;
+            GrabbedObject = gridObjectUI;
         }
 
         public GridObjectUI Release()

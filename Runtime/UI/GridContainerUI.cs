@@ -156,6 +156,7 @@ namespace Bakery
             var gridObjectUI = _gridObjects.Find(obj => obj.Grid == grid);
             if (gridObjectUI != null)
             {
+                gridObjectUI.Visibility = false;
                 _gridObjects.Remove(gridObjectUI);
                 InventorySpawner.Destroy(gridObjectUI);
             }
@@ -172,6 +173,7 @@ namespace Bakery
                 return null;
             }
             _gridObjects.Add(gridObjectUI);
+            gridObjectUI.Visibility = true;
             return gridObjectUI;
         }
 

@@ -302,6 +302,7 @@ namespace Bakery
         {
             GridObjectUI gridObject = _spawner.Spawn(_hand.transform as RectTransform,
                                                     pickedUpObject);
+
             _hand.Grab(gridObject);
         }
 

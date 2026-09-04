@@ -9,14 +9,15 @@ namespace Bakery
     public class InventoryHand : MonoBehaviour, ICursorAttachable
     {
         [SerializeField] bool _showOutsideUI;
-        private bool _initialized;
+
+        public bool ShowOutsideGUI => _showOutsideUI;
 
         public GridObjectUI GrabbedObject { get; private set; } = null;
 
-
         public bool IsEmpty => GrabbedObject == null;
-
         public int AmountHeld => GrabbedObject == null ? 0 : GrabbedObject.Stack;
+
+        private bool _initialized;
 
         public void UpdatePosition(Vector2 position)
         {
@@ -31,7 +32,7 @@ namespace Bakery
 
 
             gridObjectUI.Grab();
-            GrabbedObject = gridObjectUI;
+            gridObjectUI.Visibility = false;
             User.Cursor().Attach(this);
             StartCoroutine(DelayedAttach(gridObjectUI));
         }
@@ -39,6 +40,7 @@ namespace Bakery
         private IEnumerator DelayedAttach(GridObjectUI gridObjectUI)
         {
             yield return new WaitForEndOfFrame();
+            GrabbedObject = gridObjectUI;
             gridObjectUI.transform.SetParent(this.transform, true);
             gridObjectUI.transform.localPosition =
                 new Vector2(-gridObjectUI.Size.x / 2, gridObjectUI.Size.y);
@@ -92,8 +94,11 @@ namespace Bakery
         void Update()
         {
             if (IsEmpty) return;
-            if (_showOutsideUI) return;
-            GrabbedObject.Visibility = User.Raycast().IsOverUI();
+
+            if (_showOutsideUI)
+                GrabbedObject.Visibility = true;
+            else
+                GrabbedObject.Visibility = User.Raycast().IsOverUI();
         }
     }
 }

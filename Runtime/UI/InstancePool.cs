@@ -17,6 +17,16 @@ namespace Bakery
             _parent = parent;
         }
 
+        ~InstancePool()
+        {
+            while (_pool.Count > 0)
+            {
+                var instance = _pool[0];
+                _pool.RemoveAt(0);
+                GameObject.Destroy(instance);
+            }
+        }
+
         public T Add()
         {
             var obj = _pool.FirstOrDefault(item => !item.gameObject.activeSelf);

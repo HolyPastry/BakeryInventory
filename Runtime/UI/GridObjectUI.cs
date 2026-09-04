@@ -132,8 +132,9 @@ namespace Bakery
             Size = _gridInfo.Size * _size;
 
             _itemSprite.sprite = _gridInfo.Sprite;
-            _itemSprite.rectTransform.sizeDelta = Size;
+
             var cellBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(transform, _background);
+
             switch (grid.Rotation)
             {
                 case 0:
@@ -153,8 +154,6 @@ namespace Bakery
                     _itemSprite.rectTransform.sizeDelta = new Vector2(cellBounds.size.y, cellBounds.size.x);
                     break;
             }
-
-
 
             _itemSprite.rectTransform.anchoredPosition = new Vector2(cellBounds.center.x, cellBounds.center.y);
 

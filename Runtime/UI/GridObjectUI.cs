@@ -17,7 +17,6 @@ namespace Bakery
         [SerializeReference] private TextMeshProUGUI _stackCountText;
         [SerializeReference] private Image CellBGPrefab;
 
-
         private RotatableGrid _grid;
         private Vector2Int CellSize => CellBGPrefab == null ?
                         Vector2Int.zero : new Vector2Int((int)CellBGPrefab.rectTransform.sizeDelta.x,
@@ -37,6 +36,13 @@ namespace Bakery
 
         public int MaxStack => _gridInfo != null ? _gridInfo.StackCapacity : 1;
         public int Stack => _grid != null ? _grid.Stack : 0;
+
+        public bool Visibility
+        {
+            get => _hiddable.activeSelf;
+            set => _hiddable.SetActive(value);
+        }
+
 
         void Awake()
         {

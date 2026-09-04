@@ -8,6 +8,7 @@ namespace Bakery
 {
     public class InventoryHand : MonoBehaviour, ICursorAttachable
     {
+        [SerializeField] bool _showOutsideUI;
         private bool _initialized;
 
         public GridObjectUI GrabbedObject { get; private set; } = null;
@@ -86,6 +87,13 @@ namespace Bakery
         {
             if (IsEmpty) return false;
             return GrabbedObject.Overlaps(rectTransform);
+        }
+
+        void Update()
+        {
+            if (IsEmpty) return;
+            if (_showOutsideUI) return;
+            GrabbedObject.Visibility = User.Raycast().IsOverUI();
         }
     }
 }

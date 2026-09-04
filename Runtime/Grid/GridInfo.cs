@@ -35,6 +35,7 @@ namespace Bakery
 
         internal bool Compatible(GridInfo gridInfo)
         {
+            if (gridInfo == null) return false;
             if (Filters.Count == 0 || gridInfo.Filters.Count == 0)
                 return true;
             return Filters.Any(f => gridInfo.Filters.Contains(f));

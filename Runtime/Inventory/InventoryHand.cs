@@ -12,6 +12,7 @@ namespace Bakery
 
         public GridObjectUI GrabbedObject { get; private set; } = null;
 
+
         public bool IsEmpty => GrabbedObject == null;
 
         public int AmountHeld => GrabbedObject == null ? 0 : GrabbedObject.Stack;

@@ -247,9 +247,7 @@ namespace Bakery
 
             if (numReleased == stackBeforeRelease)
             {
-                var gridObjectUI = _hand.Release();
-                InventorySpawner.Destroy(gridObjectUI);
-                Inventory.Events.Controller.OnReleased?.Invoke(gridObjectUI, _hand, _cellUI);
+                RemoveFromHand();
             }
             else
             {
@@ -257,6 +255,13 @@ namespace Bakery
                 // the grabbed object's stack has been reduced but the hand still holds it
                 _hand.ModifyStack(0);
             }
+        }
+
+        public void RemoveFromHand()
+        {
+            var gridObjectUI = _hand.Release();
+            InventorySpawner.Destroy(gridObjectUI);
+            Inventory.Events.Controller.OnReleased?.Invoke(gridObjectUI, _hand, _cellUI);
         }
 
         private bool Grab(RotatableGrid hoveredObject, int numToGrab = -1)
@@ -275,18 +280,30 @@ namespace Bakery
 
             if (_hand.IsEmpty)
             {
-
-                GridObjectUI gridObject = _spawner.Spawn(_hand.transform as RectTransform,
-                                        pickedUpObject,
-                                        _cellUI.Size);
-                _hand.Grab(gridObject);
-
+                CreateInHand(pickedUpObject);
             }
             else
             {
                 _hand.ModifyStack(pickedUpObject.Stack);
             }
             return true;
+        }
+
+        public void CreateInHand(GridInfo info, int quantity)
+        {
+            RotatableGrid grid = new(info)
+            {
+                Stack = quantity
+            };
+            CreateInHand(grid);
+        }
+
+        private void CreateInHand(RotatableGrid pickedUpObject)
+        {
+            GridObjectUI gridObject = _spawner.Spawn(_hand.transform as RectTransform,
+                                                    pickedUpObject,
+                                                    _cellUI.Size);
+            _hand.Grab(gridObject);
         }
 
         private void OnItemRemoved(GridContainer inventory, RotatableGrid grid)

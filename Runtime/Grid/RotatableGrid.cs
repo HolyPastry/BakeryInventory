@@ -16,6 +16,7 @@ namespace Bakery
         {
             GridInfo = gridInfo;
             Stack = 1;
+
         }
 
         public RotatableGrid(RotatableGrid grabbedObject)

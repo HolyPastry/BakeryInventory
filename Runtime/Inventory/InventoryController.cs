@@ -224,7 +224,7 @@ namespace Bakery
                 Trash(GrabbedObject, 1);
             }
 
-            Release(GrabbedObject, 1);
+            Release(new(GrabbedObject), 1);
             _inputProcessed = true;
         }
 

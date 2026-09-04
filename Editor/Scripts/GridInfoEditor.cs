@@ -75,7 +75,7 @@ namespace Bakery
                             if (contains)
                             {
                                 var index = script.Coordinates.FindIndex(pos => pos.x == j && pos.y == i);
-                                if (index > 0)
+                                if (index >= 0)
                                     _serialGrid.DeleteArrayElementAtIndex(index);
                             }
                             else

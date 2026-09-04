@@ -59,15 +59,15 @@ namespace Bakery
                     for (int j = 0; j < script.MaxSize.x; j++)
                     {
                         bool contains = script.Coordinates.Contains(new Vector2Int(j, i));
-                        if (i == 0 && j == 0)
-                        {
-                            GUI.backgroundColor = Color.yellow;
-                            GUILayout.Button("X", GUILayout.MaxWidth(20));
-                            if (!contains)
-                                AddCoordinates(script, i, j);
-                            continue;
+                        // if (i == 0 && j == 0)
+                        // {
+                        //     GUI.backgroundColor = Color.yellow;
+                        //     GUILayout.Button("X", GUILayout.MaxWidth(20));
+                        //     if (!contains)
+                        //         AddCoordinates(script, i, j);
+                        //     continue;
 
-                        }
+                        // }
                         GUI.backgroundColor = contains ? Color.green : Color.red;
                         var value = contains ? 1 : 0;
                         if (GUILayout.Button(value.ToString(), GUILayout.MaxWidth(20)))

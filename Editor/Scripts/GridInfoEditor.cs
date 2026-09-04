@@ -46,8 +46,9 @@ namespace Bakery
 
                 foreach (var c in coordinates)
                 {
-                    var index = script.Coordinates.FindIndex(pos => pos.x == c.x && pos.y == c.y);
-                    _serialGrid.DeleteArrayElementAtIndex(index);
+                    var index = script.Coordinates.IndexOf(c);
+                    if (index != -1)
+                        _serialGrid.DeleteArrayElementAtIndex(index);
                 }
 
                 GUILayout.BeginVertical(style);

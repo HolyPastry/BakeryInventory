@@ -232,7 +232,8 @@ namespace Bakery
 
         private void Release(RotatableGrid grabbedObject, int numToRelease = -1)
         {
-            Debug.Log("Release - Before Check");
+            Debug.Log($"Release - Before Check {_cellUI}: {grabbedObject} ");
+
             if (_cellUI == null || grabbedObject == null) return;
             Debug.Log("Release - After Check");
             var stackBeforeRelease = grabbedObject.Stack;

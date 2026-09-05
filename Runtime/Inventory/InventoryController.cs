@@ -221,6 +221,8 @@ namespace Bakery
         private void OnReleaseOne(InputAction.CallbackContext context)
         {
             Debug.Log($"OnReleaseOne - Before Check {_inputProcessed}: {GrabbedObject}");
+            if (_hand.GrabbedObject != null)
+                Debug.Log($"Grid inside the GrabbedObject: {_hand.GrabbedObject.Grid}");
             if (_inputProcessed || GrabbedObject == null) return;
             Debug.Log("OnReleaseOne - After Check");
             if (_trashes != null && _trashes.Any(t => t.IsHovering))

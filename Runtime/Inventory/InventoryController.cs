@@ -217,20 +217,24 @@ namespace Bakery
         }
         private void OnReleaseOne(InputAction.CallbackContext context)
         {
+            Debug.Log("OnReleaseOne - Before Check");
             if (_inputProcessed || GrabbedObject == null) return;
-
+            Debug.Log("OnReleaseOne - After Check");
             if (_trashes != null && _trashes.Any(t => t.IsHovering))
             {
                 Trash(GrabbedObject, 1);
             }
 
+            Debug.Log("OnReleaseOne - After Trash Check");
             Release(new(GrabbedObject), 1);
             _inputProcessed = true;
         }
 
         private void Release(RotatableGrid grabbedObject, int numToRelease = -1)
         {
+            Debug.Log("Release - Before Check");
             if (_cellUI == null || grabbedObject == null) return;
+            Debug.Log("Release - After Check");
             var stackBeforeRelease = grabbedObject.Stack;
             if (numToRelease == -1)
                 numToRelease = grabbedObject.Stack;

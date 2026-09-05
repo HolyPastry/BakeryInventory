@@ -96,7 +96,6 @@ namespace Bakery
         void Update()
         {
             if (IsEmpty) return;
-            Debug.Log($"GrabbedObject: {GrabbedObject.name}");
             if (_showOutsideUI)
                 GrabbedObject.Visibility = true;
             else

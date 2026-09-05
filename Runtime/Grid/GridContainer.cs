@@ -225,7 +225,8 @@ namespace Bakery
             if (hoveredObject.Stack > numToGrab)
             {
                 hoveredObject.Stack -= numToGrab;
-                pickedUpGrid = new RotatableGrid(hoveredObject) { Stack = numToGrab };
+                pickedUpGrid = new RotatableGrid(hoveredObject)
+                { Stack = numToGrab };
                 Inventory.Events.Grids.OnItemStackModified(hoveredObject, hoveredObject.Stack);
                 return;
             }

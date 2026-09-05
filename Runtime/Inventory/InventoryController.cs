@@ -292,11 +292,12 @@ namespace Bakery
             return true;
         }
 
-        public void CreateInHand(GridInfo info, int quantity)
+        public void CreateInHand(GridInfo info, int quantity, bool stackable)
         {
             RotatableGrid grid = new(info)
             {
-                Stack = quantity
+                Stack = quantity,
+                Stackable = stackable
             };
             CreateInHand(grid);
         }

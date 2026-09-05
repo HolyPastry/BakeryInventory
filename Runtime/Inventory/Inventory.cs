@@ -19,6 +19,8 @@ namespace Bakery
                 // public static Action<GridContainer, RotatableGrid> OnItemStacked = delegate { };
 
                 public static Action<RotatableGrid, int> OnItemStackModified = delegate { };
+
+                public static Action<RotatableGrid> OnItemCreated = delegate { };
             }
             public static class Controller
             {

@@ -134,6 +134,7 @@ namespace Bakery
             var gridObject = new RotatableGrid(inventoryItem);
             if (!Place(inventoryInfo, gridObject))
                 return false;
+            Inventory.Events.Grids.OnItemCreated(gridObject);
             return true;
         }
 

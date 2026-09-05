@@ -200,7 +200,10 @@ namespace Bakery
 
         private void OnGrabOne(InputAction.CallbackContext context)
         {
+            Debug.Log($"OnGrabOne - Before Check{_inputProcessed}: {_hoveredGrid}");
+
             if (_inputProcessed || _hoveredGrid == null) return;
+            Debug.Log($"OnGrabOne - CanGrab?{_hand.CanGrab(_hoveredGrid)}");
             if (!_hand.CanGrab(_hoveredGrid)) return;
 
             if (Grab(_hoveredGrid, 1))

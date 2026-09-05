@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bakery.Core;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace Bakery
@@ -25,6 +26,10 @@ namespace Bakery
 
         [Header("Cursor")]
         [SerializeField] private CursorType _interactiveCursorType;
+
+
+        public UnityEvent OnGrab = new();
+        public UnityEvent OnRelease = new();
 
         private RotatableGrid _hoveredGrid;
         private RotatableGrid GrabbedObject
@@ -231,7 +236,6 @@ namespace Bakery
 
         private void Release(RotatableGrid grabbedObject, int numToRelease = -1)
         {
-
             if (_cellUI == null || grabbedObject == null) return;
 
             var stackBeforeRelease = grabbedObject.Stack;
@@ -258,6 +262,7 @@ namespace Bakery
                 // the grabbed object's stack has been reduced but the hand still holds it
                 _hand.ModifyStack(0);
             }
+            OnRelease.Invoke();
         }
 
         public void RemoveFromHand()
@@ -265,6 +270,7 @@ namespace Bakery
             var gridObjectUI = _hand.Release();
             InventorySpawner.Destroy(gridObjectUI);
             Inventory.Events.Controller.OnReleased?.Invoke(gridObjectUI, _hand, _cellUI);
+            OnRelease.Invoke();
         }
 
         private bool Grab(RotatableGrid hoveredObject, int numToGrab = -1)
@@ -289,6 +295,7 @@ namespace Bakery
             {
                 _hand.ModifyStack(pickedUpObject.Stack);
             }
+            OnGrab.Invoke();
             return true;
         }
 
@@ -308,6 +315,7 @@ namespace Bakery
                                                     pickedUpObject);
 
             _hand.Grab(gridObject);
+            OnGrab.Invoke();
         }
 
         private void OnItemRemoved(GridContainer inventory, RotatableGrid grid)

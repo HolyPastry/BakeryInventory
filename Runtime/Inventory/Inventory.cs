@@ -64,10 +64,6 @@ namespace Bakery
 
             public bool IsItemIn(GridInfo inventory, RotatableGrid item)
                 => false;
-            public bool Create(GridInfo inventoryInfo, List<GridInfo> inventoryItems)
-                => false;
-            public bool Create(GridInfo inventoryInfo, GridInfo inventoryItems)
-                => false;
 
             public bool TryGetObjectAt(GridInfo gridInfo,
                                     Vector2Int position, out RotatableGrid gridObject)
@@ -101,7 +97,10 @@ namespace Bakery
                 return false;
             }
 
-            public bool Create(GridInfo inventoryInfo, GridInfo inventoryItems, int amount)
+            public bool Create(GridInfo inventoryInfo,
+                            GridInfo inventoryItems,
+                            int amount,
+                            bool stackable)
             {
                 return false;
             }

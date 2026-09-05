@@ -110,40 +110,35 @@ namespace Bakery
 
         }
 
-
-        public bool Create(GridInfo inventoryInfo, List<GridInfo> inventoryItems)
-        {
-            foreach (var item in inventoryItems)
-            {
-                if (!Create(inventoryInfo, item))
-                    return false;
-            }
-            return true;
-        }
-
-        public bool Create(GridInfo inventoryInfo, GridInfo inventoryItem)
+        public bool Create(GridInfo inventoryInfo, GridInfo inventoryItem, bool stackable)
         {
             if (!inventoryInfo.Compatible(inventoryItem))
             {
                 Debug.LogWarning($"Trying to add an incompatible item {inventoryItem} to inventory  {inventoryInfo}.");
                 return false;
             }
-            if (TryStacking(inventoryInfo, inventoryItem))
+            if (stackable && TryStacking(inventoryInfo, inventoryItem))
                 return true;
 
-            var gridObject = new RotatableGrid(inventoryItem);
+            var gridObject = new RotatableGrid(inventoryItem)
+            {
+                Stackable = stackable
+            };
             if (!Place(inventoryInfo, gridObject))
                 return false;
             Inventory.Events.Grids.OnItemCreated(gridObject);
             return true;
         }
 
-        public bool Create(GridInfo inventoryInfo, GridInfo inventoryItems, int amount)
+        public bool Create(GridInfo inventoryInfo,
+                            GridInfo inventoryItems,
+                            int amount,
+                            bool stackable)
         {
             bool success = true;
             for (int i = 0; i < amount; i++)
             {
-                success &= Create(inventoryInfo, inventoryItems);
+                success &= Create(inventoryInfo, inventoryItems, stackable);
             }
             return success;
         }

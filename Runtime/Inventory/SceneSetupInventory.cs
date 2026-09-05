@@ -14,6 +14,7 @@ namespace Bakery
         {
             public GridInfo grid;
             public int amount;
+            public bool stackable;
         }
         [SerializeField] private GridInfo _inventoryInfo;
         [SerializeField] private List<GridAmount> _inventoryItems;
@@ -23,7 +24,10 @@ namespace Bakery
             yield return Inventory.Grids().WaitUntilReady;
             foreach (var gridAmount in _inventoryItems)
             {
-                Inventory.Grids().Create(_inventoryInfo, gridAmount.grid, gridAmount.amount);
+                Inventory.Grids().Create(_inventoryInfo,
+                                gridAmount.grid,
+                                gridAmount.amount,
+                                gridAmount.stackable);
             }
 
         }

@@ -33,6 +33,9 @@ namespace Bakery
             {
                 if (_hand.IsEmpty)
                     return null;
+                if (_hand.GrabbedObject.Grid == null)
+                    Debug.LogWarning($"Grid should not be null inside the GrabbedObject in the Hand: {_hand.GrabbedObject}");
+
                 return _hand.GrabbedObject.Grid;
             }
         }
@@ -200,10 +203,8 @@ namespace Bakery
 
         private void OnGrabOne(InputAction.CallbackContext context)
         {
-            Debug.Log($"OnGrabOne - Before Check{_inputProcessed}: {_hoveredGrid}");
-
             if (_inputProcessed || _hoveredGrid == null) return;
-            Debug.Log($"OnGrabOne - CanGrab?{_hand.CanGrab(_hoveredGrid)}");
+
             if (!_hand.CanGrab(_hoveredGrid)) return;
 
             if (Grab(_hoveredGrid, 1))
@@ -220,27 +221,19 @@ namespace Bakery
         }
         private void OnReleaseOne(InputAction.CallbackContext context)
         {
-            Debug.Log($"OnReleaseOne - Before Check {_inputProcessed}: {GrabbedObject}");
-            if (_hand.GrabbedObject != null)
-                Debug.Log($"Grid inside the GrabbedObject: {_hand.GrabbedObject.Grid}");
             if (_inputProcessed || GrabbedObject == null) return;
-            Debug.Log("OnReleaseOne - After Check");
             if (_trashes != null && _trashes.Any(t => t.IsHovering))
-            {
                 Trash(GrabbedObject, 1);
-            }
 
-            Debug.Log("OnReleaseOne - After Trash Check");
             Release(new(GrabbedObject), 1);
             _inputProcessed = true;
         }
 
         private void Release(RotatableGrid grabbedObject, int numToRelease = -1)
         {
-            Debug.Log($"Release - Before Check {_cellUI}: {grabbedObject} ");
 
             if (_cellUI == null || grabbedObject == null) return;
-            Debug.Log("Release - After Check");
+
             var stackBeforeRelease = grabbedObject.Stack;
             if (numToRelease == -1)
                 numToRelease = grabbedObject.Stack;

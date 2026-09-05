@@ -10,13 +10,15 @@ namespace Bakery
         public int Rotation; // number of 90Degree Rotations ClockWise (0, 1, 2, 3)
         public int Stack;
 
+        public bool Stackable;
+
         public bool Locked => GridInfo.Lock;
 
         public RotatableGrid(GridInfo gridInfo)
         {
             GridInfo = gridInfo;
             Stack = 1;
-
+            Stackable = true;
         }
 
         public RotatableGrid(RotatableGrid grabbedObject)
@@ -25,6 +27,7 @@ namespace Bakery
             RootPosition = grabbedObject.RootPosition;
             Rotation = grabbedObject.Rotation;
             Stack = grabbedObject.Stack;
+            Stackable = grabbedObject.Stackable;
         }
 
         public override IEnumerable<Vector2Int> LocalPositions
@@ -101,7 +104,8 @@ namespace Bakery
 
         internal bool CanStackWith(RotatableGrid grid)
         {
-            return GridInfo == grid.GridInfo &&
+            return Stackable &&
+                GridInfo == grid.GridInfo &&
                 Stack < GridInfo.StackCapacity;
         }
     }

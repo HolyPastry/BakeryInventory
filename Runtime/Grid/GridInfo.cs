@@ -31,8 +31,6 @@ namespace Bakery
             }
         }
 
-
-
         internal bool Compatible(GridInfo gridInfo)
         {
             if (gridInfo == null) return false;
@@ -41,7 +39,5 @@ namespace Bakery
             return Filters.Any(f => gridInfo.Filters.Contains(f));
         }
     }
-
-
 
 }

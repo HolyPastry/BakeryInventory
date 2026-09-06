@@ -299,23 +299,24 @@ namespace Bakery
             return true;
         }
 
-        public void CreateInHand(GridInfo info, int quantity, bool stackable)
+        public GridObjectUI CreateInHand(GridInfo info, int quantity, bool stackable)
         {
             RotatableGrid grid = new(info)
             {
                 Stack = quantity,
                 Stackable = stackable
             };
-            CreateInHand(grid);
+            return CreateInHand(grid);
         }
 
-        private void CreateInHand(RotatableGrid pickedUpObject)
+        private GridObjectUI CreateInHand(RotatableGrid pickedUpObject)
         {
             GridObjectUI gridObject = _spawner.Spawn(_hand.transform as RectTransform,
                                                     pickedUpObject);
 
             _hand.Grab(gridObject);
             OnGrab.Invoke();
+            return gridObject;
         }
 
         private void OnItemRemoved(GridContainer inventory, RotatableGrid grid)

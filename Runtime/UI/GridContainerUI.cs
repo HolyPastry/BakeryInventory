@@ -7,12 +7,12 @@ namespace Bakery
 {
     public class GridContainerUI : MonoBehaviour
     {
-        [SerializeField] private GridInfo _gridInfo;
+        [SerializeField] private ContainerInfo _containerInfo;
         [SerializeField] private GridCellUI _cellPrefab;
         [SerializeField] private RectTransform _gridObjectUIContainer;
         [SerializeField] private RectTransform _cellsContainer;
 
-        public GridInfo GridInfo => _gridInfo;
+        public ContainerInfo ContainerInfo => _containerInfo;
 
 
         private Vector2Int CellSize => _cellPrefab.Size;
@@ -26,12 +26,13 @@ namespace Bakery
             foreach (var cell in _cells)
             {
                 cell.GridContainerUI = this;
+                cell.ContainerInfo = _containerInfo;
             }
         }
 
         void OnValidate()
         {
-            if (_gridInfo == null)
+            if (_containerInfo == null)
             {
                 Debug.LogWarning($"GridInfo reference is missing in GridUIBuilder {this.name}", this);
                 return;
@@ -75,7 +76,7 @@ namespace Bakery
         }
         private void OnItemStacked(GridContainer container, RotatableGrid grid)
         {
-            if (container.GridInfo != _gridInfo) return;
+            if (container.ContainerInfo != _containerInfo) return;
             var gridObjectUI = _gridObjects.Find(obj => obj.Grid == grid);
             if (gridObjectUI == null)
                 Debug.LogWarning($"GridObjectUI not found for stacked item {grid.GridInfo.name} in GridUIBuilder {this.name}", this);
@@ -85,7 +86,7 @@ namespace Bakery
 
         private void OnItemReleased(GridObjectUI gridObjectUI, InventoryHand hand, GridCellUI cellUI)
         {
-            if (cellUI.GridInfo != _gridInfo) return;
+            if (cellUI.ContainerInfo != _containerInfo) return;
             _gridObjects.Add(gridObjectUI);
 
         }
@@ -96,10 +97,10 @@ namespace Bakery
         }
 
         private void OnHighlight(RotatableGrid grabbedObject,
-                            GridInfo gridInfo, Vector2Int
+                            ContainerInfo containerInfo, Vector2Int
                             hoveredCoordinates)
         {
-            if (gridInfo != _gridInfo) return;
+            if (containerInfo != _containerInfo) return;
 
             if (grabbedObject == null)
             {
@@ -189,7 +190,7 @@ namespace Bakery
                     DestroyImmediate(cell.gameObject);
             }
 
-            foreach (var position in _gridInfo.Coordinates)
+            foreach (var position in _containerInfo.Coordinates)
             {
                 if (_cells.Exists(cell => cell.GridCoordinates == position))
                     continue;
@@ -197,7 +198,7 @@ namespace Bakery
                 cell.name = $"Cell {position.x},{position.y}";
                 cell.Position = new Vector2Int(position.x * CellSize.x, -position.y * CellSize.y);
                 cell.GridCoordinates = position;
-                cell.GridInfo = _gridInfo;
+                cell.ContainerInfo = _containerInfo;
                 _cells.Add(cell);
             }
         }

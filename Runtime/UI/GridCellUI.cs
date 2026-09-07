@@ -27,7 +27,7 @@ namespace Bakery
         }
         public Vector2Int GridCoordinates;
 
-        public GridInfo GridInfo;
+        public ContainerInfo ContainerInfo { get; set; }
 
         public GridContainerUI GridContainerUI { get; internal set; }
 

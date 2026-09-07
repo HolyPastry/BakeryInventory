@@ -9,22 +9,22 @@ namespace Bakery
 
         CustomYieldInstruction WaitUntilReady { get; }
 
-        bool Place(GridInfo inventory, RotatableGrid item);
-        void Place(GridInfo inventory, List<RotatableGrid> inventoryItems);
+        bool Place(ContainerInfo inventory, RotatableGrid item);
+        void Place(ContainerInfo inventory, List<RotatableGrid> inventoryItems);
 
 
-        bool Create(GridInfo inventoryInfo,
+        bool Create(ContainerInfo inventoryInfo,
                     GridInfo inventoryItems,
                     int amount,
                     bool stackable);
-        bool Remove(RotatableGrid item, GridInfo inventory);
+        bool Remove(RotatableGrid item, ContainerInfo inventory);
         bool Remove(RotatableGrid item);
-        bool Remove(GridInfo inventory, GridInfo item, int amount);
-        bool IsItemIn(GridInfo inventory, RotatableGrid item);
-        IEnumerable<RotatableGrid> GetAllItems(GridInfo inventory);
-        IEnumerable<RotatableGrid> GetItems(GridInfo inventory, Predicate<RotatableGrid> predicate);
-        bool TryGetObjectAt(GridInfo gridInfo, Vector2Int position, out RotatableGrid gridObject);
+        bool Remove(ContainerInfo inventory, GridInfo item, int amount);
+        bool IsItemIn(ContainerInfo inventory, RotatableGrid item);
+        IEnumerable<RotatableGrid> GetAllItems(ContainerInfo inventory);
+        IEnumerable<RotatableGrid> GetItems(ContainerInfo inventory, Predicate<RotatableGrid> predicate);
+        bool TryGetObjectAt(ContainerInfo gridInfo, Vector2Int position, out RotatableGrid gridObject);
         void PickUp(RotatableGrid hoveredObject, int numToGrab, out RotatableGrid numGrabbed);
-        bool TryPlaceAt(RotatableGrid grabbedObject, GridInfo gridInfo, Vector2Int gridCoordinates, int numToRelease, out int numReleased);
+        bool TryPlaceAt(RotatableGrid grabbedObject, ContainerInfo gridInfo, Vector2Int gridCoordinates, int numToRelease, out int numReleased);
     }
 }

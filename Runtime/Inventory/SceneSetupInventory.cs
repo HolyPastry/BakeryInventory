@@ -16,7 +16,7 @@ namespace Bakery
             public int amount;
             public bool stackable;
         }
-        [SerializeField] private GridInfo _inventoryInfo;
+        [SerializeField] private ContainerInfo _inventoryInfo;
         [SerializeField] private List<GridAmount> _inventoryItems;
         public override IEnumerator Routine()
         {

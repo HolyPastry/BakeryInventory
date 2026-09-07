@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bakery.Core;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -88,7 +86,7 @@ namespace Bakery
         {
             foreach (var container in _containers)
             {
-                var items = Inventory.Grids().GetAllItems(container.GridInfo);
+                var items = Inventory.Grids().GetAllItems(container.ContainerInfo);
                 foreach (var item in items)
                 {
                     container.AddItem(item, _spawner);
@@ -148,7 +146,7 @@ namespace Bakery
                 return;
             }
 
-            Inventory.Grids().TryGetObjectAt(_cellUI.GridInfo,
+            Inventory.Grids().TryGetObjectAt(_cellUI.ContainerInfo,
                                                 _cellUI.GridCoordinates,
                                                 out _hoveredGrid);
             UpdateHighlight();
@@ -195,14 +193,14 @@ namespace Bakery
         {
             if (_cellUI == null ||
                     (GrabbedObject != null &&
-                    !_cellUI.GridInfo.Compatible(GrabbedObject.GridInfo)))
+                    !_cellUI.ContainerInfo.Compatible(GrabbedObject.GridInfo)))
             {
                 Inventory.Events.Controller.OnCleanHighlight?.Invoke();
                 return;
             }
 
             Inventory.Events.Controller.OnHighlight?.Invoke(GrabbedObject,
-                                    _cellUI.GridInfo,
+                                    _cellUI.ContainerInfo,
                                     _cellUI.GridCoordinates);
         }
 
@@ -230,7 +228,7 @@ namespace Bakery
             if (_trashes != null && _trashes.Any(t => t.IsHovering))
                 Trash(GrabbedObject, 1);
 
-            Release(new(GrabbedObject), 1);
+            Release(GrabbedObject, 1);
             _inputProcessed = true;
         }
 
@@ -243,7 +241,7 @@ namespace Bakery
                 numToRelease = grabbedObject.Stack;
 
             if (!Inventory.Grids().TryPlaceAt(grabbedObject,
-                                        _cellUI.GridInfo,
+                                        _cellUI.ContainerInfo,
                                         _cellUI.GridCoordinates,
                                         numToRelease,
                                         out int numReleased))
@@ -322,17 +320,17 @@ namespace Bakery
         private void OnItemRemoved(GridContainer inventory, RotatableGrid grid)
         {
 
-            if (!_containers.Exists(ui => ui.GridInfo == inventory.GridInfo))
+            if (!_containers.Exists(ui => ui.ContainerInfo == inventory.ContainerInfo))
                 return;
-            var container = _containers.First(ui => ui.GridInfo == inventory.GridInfo);
+            var container = _containers.First(ui => ui.ContainerInfo == inventory.ContainerInfo);
             container.RemoveItem(grid);
         }
 
         private void OnItemAdded(GridContainer inventory, RotatableGrid grid)
         {
-            if (!_containers.Exists(ui => ui.GridInfo == inventory.GridInfo))
+            if (!_containers.Exists(ui => ui.ContainerInfo == inventory.ContainerInfo))
                 return;
-            var container = _containers.First(ui => ui.GridInfo == inventory.GridInfo);
+            var container = _containers.First(ui => ui.ContainerInfo == inventory.ContainerInfo);
 
             container.AddItem(grid, _spawner);
         }

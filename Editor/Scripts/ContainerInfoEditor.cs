@@ -1,33 +1,23 @@
-using System;
 using UnityEditor;
 using UnityEngine;
 
 namespace Bakery
 {
-    [System.Serializable]
-    public class Wrapper<T>
-    {
-        public T[] values;
-    }
-
-
-    [CustomEditor(typeof(GridInfo))]
-    public class GridInfoEditor : Editor
+    [CustomEditor(typeof(ContainerInfo))]
+    public class ContainerInfoEditor : Editor
     {
         private SerializedProperty _serialGrid;
-
 
         void OnEnable()
         {
             _serialGrid = serializedObject.FindProperty("Coordinates");
-
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
             serializedObject.Update();
-            GridInfo script = (GridInfo)target;
+            ContainerInfo script = (ContainerInfo)target;
 
             GUILayout.Space(10);
 
@@ -35,7 +25,7 @@ namespace Bakery
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void DrawGrid(GridInfo script)
+        private void DrawGrid(ContainerInfo script)
         {
             try
             {
@@ -97,7 +87,7 @@ namespace Bakery
             }
         }
 
-        private void AddCoordinates(GridInfo script, int i, int j)
+        private void AddCoordinates(ContainerInfo script, int i, int j)
         {
             var index = script.Coordinates.FindIndex(pos => pos.x == j && pos.y == i);
             if (index < 0)

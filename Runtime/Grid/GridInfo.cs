@@ -1,17 +1,16 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace Bakery
 {
     [CreateAssetMenu(fileName = "New Grid Info", menuName = "Bakery/Inventory/Grid Info")]
-    public class GridInfo : ScriptableObject
+    public class GridInfo : BaseInventoryInfo
     {
         public Sprite Sprite;
-        public List<InventoryFilter> Filters;
-        public List<Vector2Int> Coordinates = new();
-        public Vector2Int MaxSize;
+        // public List<InventoryFilter> Filters;
+        // public List<Vector2Int> Coordinates = new();
+        // public Vector2Int MaxSize;
         public int StackCapacity;
         public bool Lock;
 
@@ -31,13 +30,13 @@ namespace Bakery
             }
         }
 
-        internal bool Compatible(GridInfo gridInfo)
-        {
-            if (gridInfo == null) return false;
-            if (Filters.Count == 0 || gridInfo.Filters.Count == 0)
-                return true;
-            return Filters.Any(f => gridInfo.Filters.Contains(f));
-        }
+        // internal bool Compatible(GridInfo gridInfo)
+        // {
+        //     if (gridInfo == null) return false;
+        //     if (Filters.Count == 0 || gridInfo.Filters.Count == 0)
+        //         return true;
+        //     return Filters.Any(f => gridInfo.Filters.Contains(f));
+        // }
     }
 
 }

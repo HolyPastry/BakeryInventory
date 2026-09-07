@@ -8,8 +8,9 @@ namespace Bakery
 {
 
     [Serializable]
-    public class GridContainer : GridBase
+    public class GridContainer
     {
+        public ContainerInfo ContainerInfo { get; set; }
         public readonly List<RotatableGrid> Grids = new();
 
         public bool Remove(RotatableGrid grid)
@@ -69,7 +70,7 @@ namespace Bakery
 
         public bool FitIn(RotatableGrid grid)
         {
-            foreach (var coordinate in GridInfo.Coordinates)
+            foreach (var coordinate in ContainerInfo.Coordinates)
                 if (FitIn(grid, coordinate))
                     return true;
             return false;
@@ -141,7 +142,7 @@ namespace Bakery
         {
             foreach (var pos in grid.WorldPositions)
             {
-                if (!GridInfo.Coordinates.Exists(p => p == pos))
+                if (!ContainerInfo.Coordinates.Exists(p => p == pos))
                     return true;
             }
             return false;
@@ -211,7 +212,7 @@ namespace Bakery
 
         private bool Compatible(RotatableGrid grabbedObject)
         {
-            return GridInfo.Compatible(grabbedObject.GridInfo);
+            return ContainerInfo.Compatible(grabbedObject.GridInfo);
         }
 
         internal void PickUp(RotatableGrid hoveredObject,

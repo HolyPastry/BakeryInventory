@@ -32,10 +32,10 @@ namespace Bakery
             get; private set;
         }
         public bool Grabbed => _grid != null && _grid.Grabbed;
-        public bool FullStack => _gridInfo != null && _grid.Stack >= _gridInfo.StackCapacity;
+        public bool FullStack => _gridInfo != null && _grid.Amount >= _gridInfo.StackCapacity;
 
         public int MaxStack => _gridInfo != null ? _gridInfo.StackCapacity : 1;
-        public int Stack => _grid != null ? _grid.Stack : 0;
+        public int Stack => _grid != null ? _grid.Amount : 0;
 
         public bool Visibility
         {
@@ -93,11 +93,11 @@ namespace Bakery
         {
             if (grid != null &&
                 _gridInfo.StackCapacity > 1 &&
-                grid.Stack > 1)
+                grid.Amount > 1)
             {
                 _stackBg.SetActive(true);
 
-                _stackCountText.text = $"{grid.Stack}/{_gridInfo.StackCapacity}";
+                _stackCountText.text = $"{grid.Amount}/{_gridInfo.StackCapacity}";
             }
             else
             {

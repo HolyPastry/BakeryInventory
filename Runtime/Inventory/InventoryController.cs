@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -51,6 +52,7 @@ namespace Bakery
         private bool _inputProcessed;
 
         private List<GridContainerUI> _containers = new();
+        private bool _ready;
 
         void Awake()
         {
@@ -79,19 +81,14 @@ namespace Bakery
             Inventory.Events.Grids.OnItemAdded += OnItemAdded;
             Inventory.Events.Grids.OnItemRemoved += OnItemRemoved;
 
-            UpdateGrids();
+            if (_ready)
+                UpdateGrids();
         }
 
         private void UpdateGrids()
         {
             foreach (var container in _containers)
-            {
-                var items = Inventory.Grids().GetAllItems(container.ContainerInfo);
-                foreach (var item in items)
-                {
-                    container.AddItem(item, _spawner);
-                }
-            }
+                container.Initialize(_spawner);
         }
 
         void OnDisable()
@@ -124,6 +121,14 @@ namespace Bakery
             {
                 container.Clear();
             }
+        }
+
+        IEnumerator Start()
+        {
+            yield return Inventory.Grids().WaitUntilReady;
+
+            UpdateGrids();
+            _ready = true;
         }
 
         void Update()
@@ -236,9 +241,9 @@ namespace Bakery
         {
             if (_cellUI == null || grabbedObject == null) return;
 
-            var stackBeforeRelease = grabbedObject.Stack;
+            var stackBeforeRelease = grabbedObject.Amount;
             if (numToRelease == -1)
-                numToRelease = grabbedObject.Stack;
+                numToRelease = grabbedObject.Amount;
 
             if (!Inventory.Grids().TryPlaceAt(grabbedObject,
                                         _cellUI.ContainerInfo,
@@ -274,7 +279,7 @@ namespace Bakery
         private bool Grab(RotatableGrid hoveredObject, int numToGrab = -1)
         {
             if (numToGrab == -1)
-                numToGrab = hoveredObject.Stack;
+                numToGrab = hoveredObject.Amount;
 
             //If the hand is already holding an object, 
             // we can only grab so much
@@ -291,7 +296,7 @@ namespace Bakery
             }
             else
             {
-                _hand.ModifyStack(pickedUpObject.Stack);
+                _hand.ModifyStack(pickedUpObject.Amount);
             }
             OnGrab.Invoke();
             return true;
@@ -301,7 +306,7 @@ namespace Bakery
         {
             RotatableGrid grid = new(info)
             {
-                Stack = quantity,
+                Amount = quantity,
                 Stackable = stackable
             };
             return CreateInHand(grid);

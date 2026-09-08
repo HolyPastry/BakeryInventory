@@ -72,9 +72,9 @@ namespace Bakery
         internal void ModifyStack(int amount)
         {
             if (GrabbedObject == null) return;
-            GrabbedObject.Grid.Stack += amount;
+            GrabbedObject.Grid.Amount += amount;
             GrabbedObject.UpdateStack();
-            if (GrabbedObject.Grid.Stack <= 0)
+            if (GrabbedObject.Grid.Amount <= 0)
                 Release();
         }
 

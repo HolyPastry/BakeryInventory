@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -45,9 +46,6 @@ namespace Bakery
         }
         void OnEnable()
         {
-
-            // Inventory.Events.Grids.OnItemPlaced += OnItemPlaced;
-
             Inventory.Events.Grids.OnItemStackModified += OnItemStackModified;
 
             Inventory.Events.Controller.OnHighlight += OnHighlight;
@@ -57,8 +55,6 @@ namespace Bakery
         void OnDisable()
         {
 
-            //s Inventory.Events.Grids.OnItemPlaced -= OnItemPlaced;
-
             Inventory.Events.Grids.OnItemStackModified -= OnItemStackModified;
 
             Inventory.Events.Controller.OnHighlight -= OnHighlight;
@@ -67,28 +63,14 @@ namespace Bakery
         }
 
 
+
+
         private void OnItemStackModified(RotatableGrid hoveredObject, int amount)
         {
             var gridObjectUI = _gridObjects.Find(obj => obj.Grid == hoveredObject);
             if (gridObjectUI == null)
                 return;
             gridObjectUI.UpdateStack();
-        }
-        private void OnItemStacked(GridContainer container, RotatableGrid grid)
-        {
-            if (container.ContainerInfo != _containerInfo) return;
-            var gridObjectUI = _gridObjects.Find(obj => obj.Grid == grid);
-            if (gridObjectUI == null)
-                Debug.LogWarning($"GridObjectUI not found for stacked item {grid.GridInfo.name} in GridUIBuilder {this.name}", this);
-            else
-                gridObjectUI.UpdateStack();
-        }
-
-        private void OnItemReleased(GridObjectUI gridObjectUI, InventoryHand hand, GridCellUI cellUI)
-        {
-            if (cellUI.ContainerInfo != _containerInfo) return;
-            _gridObjects.Add(gridObjectUI);
-
         }
 
         private void OnItemRotated(RotatableGrid grid)
@@ -137,20 +119,6 @@ namespace Bakery
             foreach (var cell in _cells)
                 cell.CleanHighlight();
         }
-
-
-        // private void OnItemPlaced(GridContainer container, RotatableGrid grid)
-        // {
-        //     if (container.GridInfo != _gridInfo) return;
-
-        //     var gridObjectUI = _gridObjects.Find(obj => obj.Grid == grid);
-        //     if (gridObjectUI == null)
-        //         gridObjectUI = AddItemUI(grid);
-
-        //     gridObjectUI.transform.SetParent(_gridObjectUIContainer, false);
-        //     gridObjectUI.transform.SetAsLastSibling();
-        //     gridObjectUI.Place(grid);
-        // }
 
         public void RemoveItem(RotatableGrid grid)
         {
@@ -220,6 +188,13 @@ namespace Bakery
                 _gridObjects.Remove(grid);
                 InventorySpawner.Destroy(grid);
             }
+        }
+
+        internal void Initialize(InventorySpawner spawner)
+        {
+            var allItems = Inventory.Grids().GetAllItems(_containerInfo);
+            foreach (var item in allItems)
+                AddItem(item, spawner);
         }
     }
 }

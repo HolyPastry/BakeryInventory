@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Bakery.Core;
+using Bakery.Saves;
 using UnityEngine;
 
 
@@ -10,11 +12,18 @@ namespace Bakery
 
     public class InventoryGridManager : MonoBehaviour, IInventoryGridManager
     {
+        [SerializeField] private string _gridInfoFolderName = "InventoryGrids";
         private readonly List<GridContainer> _containers = new();
 
         public CustomYieldInstruction WaitUntilReady => new WaitUntil(() => _isReady);
 
         private bool _isReady = false;
+        private DataCollection<GridInfo> _gridCollection;
+
+        void Awake()
+        {
+            _gridCollection = new(_gridInfoFolderName);
+        }
 
         void OnEnable()
         {
@@ -29,6 +38,8 @@ namespace Bakery
         IEnumerator Start()
         {
             yield return FlowServices.WaitUntilReady();
+
+
             _isReady = true;
         }
 
@@ -63,8 +74,22 @@ namespace Bakery
             var serialInventory = _containers.Find(i => i.ContainerInfo == inventory);
             if (serialInventory == null)
             {
-                serialInventory = new() { ContainerInfo = inventory };
-                _containers.Add(serialInventory);
+                if (inventory.IsPersistent)
+                {
+                    serialInventory = SaveServices.Load<GridContainer>(inventory.name);
+                    serialInventory ??= new();
+
+                    serialInventory.ContainerInfo = inventory;
+                    serialInventory.Deserialize(_gridCollection);
+                }
+                else
+                    serialInventory = new()
+                    {
+                        ContainerInfo = inventory
+                    };
+
+
+                _containers.AddUnique(serialInventory);
             }
             return serialInventory;
         }
@@ -155,9 +180,9 @@ namespace Bakery
             foreach (var item in serialInventory.Grids)
             {
                 if (item.GridInfo == inventoryItem &&
-                    item.Stack < item.GridInfo.StackCapacity)
+                    item.Amount < item.GridInfo.StackCapacity)
                 {
-                    item.Stack++;
+                    item.Amount++;
                     Inventory.Events.Grids.OnItemStackModified?.Invoke(item, 1);
                     return true;
                 }

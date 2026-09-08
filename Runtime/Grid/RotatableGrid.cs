@@ -8,16 +8,27 @@ namespace Bakery
     public class RotatableGrid : GridBase
     {
         public int Rotation; // number of 90Degree Rotations ClockWise (0, 1, 2, 3)
-        public int Stack;
-
+        public int Amount;
         public bool Stackable;
-
         public bool Locked => GridInfo.Lock;
+
+        [NonSerialized]
+        private bool _grabbed;
+
+        public bool Grabbed
+        {
+            get => _grabbed;
+            set
+            {
+                _grabbed = value;
+                RootPosition = _grabbed ? Vector2Int.zero : RootPosition;
+            }
+        }
 
         public RotatableGrid(GridInfo gridInfo)
         {
             GridInfo = gridInfo;
-            Stack = 1;
+            Amount = 1;
             Stackable = true;
         }
 
@@ -26,7 +37,7 @@ namespace Bakery
             GridInfo = grabbedObject.GridInfo;
             RootPosition = grabbedObject.RootPosition;
             Rotation = grabbedObject.Rotation;
-            Stack = grabbedObject.Stack;
+            Amount = grabbedObject.Amount;
             Stackable = grabbedObject.Stackable;
         }
 
@@ -46,30 +57,16 @@ namespace Bakery
         {
             get
             {
-                _worldPositionsCache.Clear();
+                List<Vector2Int> worldPositions = new();
                 foreach (var localPos in GridInfo.Coordinates)
                 {
                     Vector2Int rotatedPos = RotatePosition(localPos, Rotation);
                     Vector2Int worldPos = RootPosition + rotatedPos;
-                    _worldPositionsCache.Add(worldPos);
+                    worldPositions.Add(worldPos);
                 }
-                return _worldPositionsCache;
+                return worldPositions;
             }
         }
-
-        public bool Grabbed
-        {
-            get => _grabbed;
-            set
-            {
-                _grabbed = value;
-                RootPosition = _grabbed ? Vector2Int.zero : RootPosition;
-            }
-        }
-
-
-
-        private bool _grabbed;
 
         private Vector2Int RotatePosition(Vector2Int localPos, int rotation)
         {
@@ -106,7 +103,7 @@ namespace Bakery
         {
             return Stackable &&
                 GridInfo == grid.GridInfo &&
-                Stack < GridInfo.StackCapacity;
+                Amount < GridInfo.StackCapacity;
         }
     }
 

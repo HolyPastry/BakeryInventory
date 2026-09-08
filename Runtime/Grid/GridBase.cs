@@ -8,12 +8,12 @@ namespace Bakery
     [Serializable]
     public class GridBase
     {
+        [NonSerialized]
         public GridInfo GridInfo;
+
+        [HideInInspector]
+        public string GrindInfoName;
         public Vector2Int RootPosition;
-
-
-
-        protected List<Vector2Int> _worldPositionsCache = new();
 
         public virtual IEnumerable<Vector2Int> LocalPositions => GridInfo.Coordinates;
 
@@ -21,13 +21,13 @@ namespace Bakery
         {
             get
             {
-                _worldPositionsCache.Clear();
+                List<Vector2Int> worldPositions = new();
                 foreach (var localPos in GridInfo.Coordinates)
                 {
                     Vector2Int worldPos = RootPosition + localPos;
-                    _worldPositionsCache.Add(worldPos);
+                    worldPositions.Add(worldPos);
                 }
-                return _worldPositionsCache;
+                return worldPositions;
             }
         }
 

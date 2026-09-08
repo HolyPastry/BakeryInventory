@@ -2,24 +2,35 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bakery.Core;
+using Bakery.Saves;
 using UnityEngine;
 
 namespace Bakery
 {
 
     [Serializable]
-    public class GridContainer
+    public class GridContainer : SerialData
     {
+
         public ContainerInfo ContainerInfo { get; set; }
         public int Count => Grids.Count;
 
-        public readonly List<RotatableGrid> Grids = new();
+        public List<RotatableGrid> Grids = new();
+
+        private void Load()
+        {
+
+
+        }
 
         public bool Remove(RotatableGrid grid)
         {
             bool removed = Grids.Remove(grid);
             if (removed)
+            {
                 Inventory.Events.Grids.OnItemRemoved?.Invoke(this, grid);
+                Save();
+            }
 
             return removed;
         }
@@ -35,9 +46,33 @@ namespace Bakery
             {
                 Grids.AddUnique(grid);
                 Inventory.Events.Grids.OnItemAdded?.Invoke(this, grid);
+                Save();
                 return true;
             }
             return false;
+        }
+
+        public void Deserialize(DataCollection<GridInfo> collection)
+        {
+            foreach (var grid in Grids)
+            {
+                grid.GridInfo = collection.GetFromName(grid.GrindInfoName);
+                if (grid.GridInfo == null)
+                    Debug.LogWarning($"Saved Grid couldn't be loaded:{grid.GrindInfoName}");
+            }
+        }
+        public override void Serialize()
+        {
+            foreach (var grid in Grids)
+            {
+                grid.GrindInfoName = grid.GridInfo.name;
+            }
+        }
+
+        public void Save()
+        {
+            if (!ContainerInfo.IsPersistent) return;
+            SaveServices.Save(ContainerInfo.name, this);
         }
 
         internal bool Place(RotatableGrid grabbedObject,
@@ -52,21 +87,23 @@ namespace Bakery
             numReleased = 0;
             if (!FitIn(grabbedObject, gridCoordinates, grabbedObject.Rotation))
                 return false;
-            if (numToRelease != -1 && numToRelease < grabbedObject.Stack)
+            if (numToRelease != -1 && numToRelease < grabbedObject.Amount)
             {
                 RotatableGrid copy = new(grabbedObject)
                 {
-                    Stack = numToRelease
+                    Amount = numToRelease
                 };
-                grabbedObject.Stack -= numToRelease;
+                grabbedObject.Amount -= numToRelease;
                 numReleased = numToRelease;
                 Grids.AddUnique(copy);
                 Inventory.Events.Grids.OnItemAdded?.Invoke(this, copy);
+                Save();
                 return true;
             }
-            numReleased = grabbedObject.Stack;
+            numReleased = grabbedObject.Amount;
             Grids.AddUnique(grabbedObject);
             Inventory.Events.Grids.OnItemAdded?.Invoke(this, grabbedObject);
+            Save();
             return true;
         }
 
@@ -164,23 +201,23 @@ namespace Bakery
         internal int StackItem(RotatableGrid objectToStack, Vector2Int gridCoordinates, int numToStack = -1)
         {
             if (numToStack == -1)
-                numToStack = objectToStack.Stack;
+                numToStack = objectToStack.Amount;
             var otherItem = Grids.Find(item => item.WorldPositions.Any(p => p == gridCoordinates));
             if (otherItem == null || !otherItem.CanStackWith(objectToStack))
             {
                 Debug.LogWarning("No stackable item found at the specified coordinates.");
-                return objectToStack.Stack; // Return the original amount since no stacking occurred
+                return objectToStack.Amount; // Return the original amount since no stacking occurred
             }
 
-            int availableSpace = otherItem.GridInfo.StackCapacity - otherItem.Stack;
+            int availableSpace = otherItem.GridInfo.StackCapacity - otherItem.Amount;
             int stackAmount = Math.Min(availableSpace, numToStack);
 
-            otherItem.Stack += stackAmount;
-            objectToStack.Stack -= stackAmount;
+            otherItem.Amount += stackAmount;
+            objectToStack.Amount -= stackAmount;
 
             Inventory.Events.Grids.OnItemStackModified?.Invoke(otherItem, stackAmount);
-
-            return objectToStack.Stack;
+            Save();
+            return objectToStack.Amount;
         }
 
         internal bool TryPlaceAt(RotatableGrid grabbedObject, Vector2Int gridCoordinates, int numToRelease, out int numReleased)
@@ -192,7 +229,7 @@ namespace Bakery
             }
             if (CanStack(grabbedObject, gridCoordinates))
             {
-                var stackBeforeStacking = grabbedObject.Stack;
+                var stackBeforeStacking = grabbedObject.Amount;
                 var remainingStack = StackItem(grabbedObject, gridCoordinates, numToRelease);
                 if (remainingStack <= 0)
                 {
@@ -200,6 +237,7 @@ namespace Bakery
                     return true;
                 }
                 numReleased = stackBeforeStacking - remainingStack;
+                Save();
                 return true;
             }
 
@@ -208,6 +246,7 @@ namespace Bakery
                 numReleased = 0;
                 return false;
             }
+            Save();
             return true;
 
         }
@@ -225,19 +264,21 @@ namespace Bakery
             if (numToGrab <= 0)
                 return;
 
-            if (hoveredObject.Stack > numToGrab)
+            if (hoveredObject.Amount > numToGrab)
             {
-                hoveredObject.Stack -= numToGrab;
+                hoveredObject.Amount -= numToGrab;
                 pickedUpGrid = new RotatableGrid(hoveredObject)
-                { Stack = numToGrab };
-                Inventory.Events.Grids.OnItemStackModified(hoveredObject, hoveredObject.Stack);
+                { Amount = numToGrab };
+                Inventory.Events.Grids.OnItemStackModified(hoveredObject, hoveredObject.Amount);
+                Save();
                 return;
             }
 
-            if (hoveredObject.Stack <= numToGrab)
+            if (hoveredObject.Amount <= numToGrab)
             {
                 Remove(hoveredObject);
                 pickedUpGrid = hoveredObject;
+
                 return;
             }
         }
@@ -248,20 +289,20 @@ namespace Bakery
             if (matchingGrids.Count == 0) return false;
             foreach (var grid in matchingGrids)
             {
-                if (grid.Stack > amount)
+                if (grid.Amount > amount)
                 {
-                    grid.Stack -= amount;
+                    grid.Amount -= amount;
                     Inventory.Events.Grids.OnItemStackModified?.Invoke(grid, amount);
                     return true;
                 }
-                if (grid.Stack == amount)
+                if (grid.Amount == amount)
                 {
                     Remove(grid);
                     return true;
                 }
-                if (grid.Stack < amount)
+                if (grid.Amount < amount)
                 {
-                    amount -= grid.Stack;
+                    amount -= grid.Amount;
                     Remove(grid);
                 }
             }

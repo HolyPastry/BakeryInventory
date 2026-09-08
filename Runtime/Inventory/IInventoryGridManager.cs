@@ -26,5 +26,7 @@ namespace Bakery
         bool TryGetObjectAt(ContainerInfo gridInfo, Vector2Int position, out RotatableGrid gridObject);
         void PickUp(RotatableGrid hoveredObject, int numToGrab, out RotatableGrid numGrabbed);
         bool TryPlaceAt(RotatableGrid grabbedObject, ContainerInfo gridInfo, Vector2Int gridCoordinates, int numToRelease, out int numReleased);
+
+        bool IsEmpty(ContainerInfo containerInfo);
     }
 }

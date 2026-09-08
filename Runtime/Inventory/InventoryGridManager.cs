@@ -32,6 +32,11 @@ namespace Bakery
             _isReady = true;
         }
 
+        public bool IsEmpty(ContainerInfo inventory)
+        {
+            return GetInventory(inventory).Count > 0;
+        }
+
         public bool Place(ContainerInfo inventory, RotatableGrid item)
         {
             if (GetInventory(inventory).Add(item))

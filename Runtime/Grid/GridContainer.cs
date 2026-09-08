@@ -11,6 +11,8 @@ namespace Bakery
     public class GridContainer
     {
         public ContainerInfo ContainerInfo { get; set; }
+        public int Count => Grids.Count;
+
         public readonly List<RotatableGrid> Grids = new();
 
         public bool Remove(RotatableGrid grid)

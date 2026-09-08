@@ -106,6 +106,11 @@ namespace Bakery
             {
                 return false;
             }
+
+            public bool IsEmpty(ContainerInfo containerInfo)
+            {
+                return true;
+            }
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics()

@@ -38,6 +38,7 @@ namespace Bakery
             if (_dummyManager == null)
             {
                 _dummyManager = new InventoryGridDummyManager();
+                Grids = () => _dummyManager;
             }
             return _dummyManager;
         }

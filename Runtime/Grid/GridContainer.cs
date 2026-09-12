@@ -14,14 +14,7 @@ namespace Bakery
 
         public ContainerInfo ContainerInfo { get; set; }
         public int Count => Grids.Count;
-
         public List<RotatableGrid> Grids = new();
-
-        private void Load()
-        {
-
-
-        }
 
         public bool Remove(RotatableGrid grid)
         {

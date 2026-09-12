@@ -31,7 +31,7 @@ namespace Bakery
         public UnityEvent OnRelease = new();
 
         private RotatableGrid _hoveredGrid;
-        private RotatableGrid GrabbedObject
+        public RotatableGrid GrabbedObject
         {
             get
             {

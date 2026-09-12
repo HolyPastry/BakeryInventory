@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace Bakery
 {
+
     public class SceneSetupInventory : SceneSetupScript
     {
         [Serializable]

@@ -140,7 +140,9 @@ namespace Bakery
 
         }
 
-        public bool Create(ContainerInfo inventoryInfo, GridInfo inventoryItem, bool stackable)
+        public bool Create(ContainerInfo inventoryInfo,
+                    GridInfo inventoryItem,
+                    bool stackable)
         {
             if (!inventoryInfo.Compatible(inventoryItem))
             {

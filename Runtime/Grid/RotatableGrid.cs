@@ -8,6 +8,7 @@ namespace Bakery
     public class RotatableGrid : GridBase
     {
         public int Rotation; // number of 90Degree Rotations ClockWise (0, 1, 2, 3)
+        public long Id; // Used as a unique identifier for the grid object by sub systems;
         public int Amount;
         public bool Stackable;
         public bool Locked => GridInfo.Lock;
@@ -39,6 +40,7 @@ namespace Bakery
             Rotation = grabbedObject.Rotation;
             Amount = grabbedObject.Amount;
             Stackable = grabbedObject.Stackable;
+            Id = grabbedObject.Id;
         }
 
         public override IEnumerable<Vector2Int> LocalPositions

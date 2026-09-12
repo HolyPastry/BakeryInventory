@@ -13,6 +13,8 @@ namespace Bakery
         public bool Stackable;
         public bool Locked => GridInfo.Lock;
 
+        public ExtraGridData SubData;
+
         [NonSerialized]
         private bool _grabbed;
 

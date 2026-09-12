@@ -142,7 +142,8 @@ namespace Bakery
 
         public bool Create(ContainerInfo inventoryInfo,
                     GridInfo inventoryItem,
-                    bool stackable)
+                    bool stackable,
+                    int id = -1)
         {
             if (!inventoryInfo.Compatible(inventoryItem))
             {
@@ -154,7 +155,8 @@ namespace Bakery
 
             var gridObject = new RotatableGrid(inventoryItem)
             {
-                Stackable = stackable
+                Stackable = stackable,
+                Id = id,
             };
             if (!Place(inventoryInfo, gridObject))
                 return false;
@@ -165,12 +167,13 @@ namespace Bakery
         public bool Create(ContainerInfo inventoryInfo,
                             GridInfo inventoryItems,
                             int amount,
-                            bool stackable)
+                            bool stackable,
+                            int id = -1)
         {
             bool success = true;
             for (int i = 0; i < amount; i++)
             {
-                success &= Create(inventoryInfo, inventoryItems, stackable);
+                success &= Create(inventoryInfo, inventoryItems, stackable, id);
             }
             return success;
         }

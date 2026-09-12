@@ -16,7 +16,8 @@ namespace Bakery
         bool Create(ContainerInfo inventoryInfo,
                     GridInfo inventoryItems,
                     int amount,
-                    bool stackable);
+                    bool stackable,
+                    int id = -1);
         bool Remove(RotatableGrid item, ContainerInfo inventory);
         bool Remove(RotatableGrid item);
         bool Remove(ContainerInfo inventory, GridInfo item, int amount);

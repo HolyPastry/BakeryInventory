@@ -33,14 +33,14 @@ namespace Bakery
             Stackable = true;
         }
 
-        public RotatableGrid(RotatableGrid grabbedObject)
+        public RotatableGrid(RotatableGrid clone)
         {
-            GridInfo = grabbedObject.GridInfo;
-            RootPosition = grabbedObject.RootPosition;
-            Rotation = grabbedObject.Rotation;
-            Amount = grabbedObject.Amount;
-            Stackable = grabbedObject.Stackable;
-            Id = grabbedObject.Id;
+            GridInfo = clone.GridInfo;
+            RootPosition = clone.RootPosition;
+            Rotation = clone.Rotation;
+            Amount = clone.Amount;
+            Stackable = clone.Stackable;
+            Id = clone.Id;
         }
 
         public override IEnumerable<Vector2Int> LocalPositions

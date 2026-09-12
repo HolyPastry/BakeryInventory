@@ -98,7 +98,8 @@ namespace Bakery
             public bool Create(ContainerInfo inventoryInfo,
                             GridInfo inventoryItems,
                             int amount,
-                            bool stackable)
+                            bool stackable,
+                            int id = -1)
             {
                 return false;
             }

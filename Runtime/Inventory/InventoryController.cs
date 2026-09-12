@@ -302,12 +302,13 @@ namespace Bakery
             return true;
         }
 
-        public GridObjectUI CreateInHand(GridInfo info, int quantity, bool stackable)
+        public GridObjectUI CreateInHand(GridInfo info, int quantity, bool stackable, int id = -1)
         {
             RotatableGrid grid = new(info)
             {
                 Amount = quantity,
-                Stackable = stackable
+                Stackable = stackable,
+                Id = id
             };
             return CreateInHand(grid);
         }

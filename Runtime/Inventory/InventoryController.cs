@@ -302,7 +302,7 @@ namespace Bakery
             return true;
         }
 
-        public GridObjectUI CreateInHand(GridInfo info, int quantity, bool stackable, int id = -1)
+        public GridObjectUI CreateInHand(GridInfo info, int quantity, bool stackable, long id = -1)
         {
             RotatableGrid grid = new(info)
             {

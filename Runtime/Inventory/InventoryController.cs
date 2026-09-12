@@ -27,8 +27,8 @@ namespace Bakery
         [SerializeField] private CursorType _interactiveCursorType;
 
 
-        public UnityEvent OnGrab = new();
-        public UnityEvent OnRelease = new();
+        public UnityEvent<RotatableGrid> OnGrab = new();
+        public UnityEvent<RotatableGrid> OnRelease = new();
 
         private RotatableGrid _hoveredGrid;
         public RotatableGrid GrabbedObject
@@ -258,6 +258,7 @@ namespace Bakery
             if (numReleased == stackBeforeRelease)
             {
                 RemoveFromHand();
+                OnRelease.Invoke(grabbedObject);
             }
             else
             {
@@ -265,7 +266,6 @@ namespace Bakery
                 // the grabbed object's stack has been reduced but the hand still holds it
                 _hand.ModifyStack(0);
             }
-            OnRelease.Invoke();
         }
 
         public void RemoveFromHand()
@@ -273,7 +273,6 @@ namespace Bakery
             var gridObjectUI = _hand.Release();
             InventorySpawner.Destroy(gridObjectUI);
             Inventory.Events.Controller.OnReleased?.Invoke(gridObjectUI, _hand, _cellUI);
-            OnRelease.Invoke();
         }
 
         private bool Grab(RotatableGrid hoveredObject, int numToGrab = -1)
@@ -298,7 +297,7 @@ namespace Bakery
             {
                 _hand.ModifyStack(pickedUpObject.Amount);
             }
-            OnGrab.Invoke();
+            OnGrab.Invoke(pickedUpObject);
             return true;
         }
 
@@ -319,7 +318,7 @@ namespace Bakery
                                                     pickedUpObject);
 
             _hand.Grab(gridObject);
-            OnGrab.Invoke();
+            OnGrab.Invoke(pickedUpObject);
             return gridObject;
         }
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Bakery
@@ -16,6 +17,8 @@ namespace Bakery
         [SerializeReference] private GameObject _stackBg;
         [SerializeReference] private TextMeshProUGUI _stackCountText;
         [SerializeReference] private Image CellBGPrefab;
+
+        public UnityEvent<Bounds> OnGridUpdated = new();
 
         private RotatableGrid _grid;
         private Vector2Int CellSize => CellBGPrefab == null ?
@@ -161,6 +164,7 @@ namespace Bakery
             }
 
             _itemSprite.rectTransform.anchoredPosition = new Vector2(cellBounds.center.x, cellBounds.center.y);
+            OnGridUpdated.Invoke(cellBounds);
 
         }
 

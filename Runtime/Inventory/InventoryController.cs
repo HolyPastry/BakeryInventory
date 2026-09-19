@@ -208,7 +208,7 @@ namespace Bakery
                                 Inventory.Grids().IsPlaceable(GrabbedObject,
                                     _cellUI.ContainerInfo,
                                     _cellUI.GridCoordinates);
-            Debug.Log("Is placeable: " + isPlaceable);
+            
             Inventory.Events.Controller.OnHighlight?.Invoke(GrabbedObject,
                                     _cellUI.ContainerInfo,
                                     _cellUI.GridCoordinates,

@@ -30,6 +30,14 @@ namespace Bakery
         public ContainerInfo ContainerInfo { get; set; }
 
         public GridContainerUI GridContainerUI { get; internal set; }
+        public bool IsLocked
+        {
+            get
+            {
+                Inventory.Grids().TryGetObjectAt(ContainerInfo, GridCoordinates, out var grid);
+                return grid != null && grid.Locked;
+            }
+        }
 
         internal void CleanHighlight()
             => image.color = _defaultColor;

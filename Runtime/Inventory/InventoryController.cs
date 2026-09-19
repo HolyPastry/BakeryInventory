@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -198,7 +199,8 @@ namespace Bakery
         {
             if (_cellUI == null ||
                     (GrabbedObject != null &&
-                    !_cellUI.ContainerInfo.Compatible(GrabbedObject.GridInfo)))
+                    !_cellUI.ContainerInfo.Compatible(GrabbedObject.GridInfo)) ||
+                    _cellUI.IsLocked)
             {
                 Inventory.Events.Controller.OnCleanHighlight?.Invoke();
                 return;

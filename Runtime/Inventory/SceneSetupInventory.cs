@@ -23,8 +23,18 @@ namespace Bakery
         {
             yield return FlowServices.WaitUntilReady();
             yield return Inventory.Grids().WaitUntilReady;
+            if(_inventoryItems == null)
+            {
+                Debug.LogWarning("Inventory items list is null.");
+                yield break;
+            }
             foreach (var gridAmount in _inventoryItems)
             {
+                if (gridAmount.grid == null)
+                {
+                    Debug.LogWarning("Grid is null for one of the inventory items.");
+                    continue;
+                }
                 Inventory.Grids().Create(_inventoryInfo,
                                 gridAmount.grid,
                                 gridAmount.amount,

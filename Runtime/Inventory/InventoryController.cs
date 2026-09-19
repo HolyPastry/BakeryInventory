@@ -199,16 +199,20 @@ namespace Bakery
         {
             if (_cellUI == null ||
                     (GrabbedObject != null &&
-                    !_cellUI.ContainerInfo.Compatible(GrabbedObject.GridInfo)) ||
-                    _cellUI.IsLocked)
+                    !_cellUI.ContainerInfo.Compatible(GrabbedObject.GridInfo)))
             {
                 Inventory.Events.Controller.OnCleanHighlight?.Invoke();
                 return;
             }
-
-            Inventory.Events.Controller.OnHighlight?.Invoke(GrabbedObject,
+            bool isPlaceable = GrabbedObject != null && 
+                                Inventory.Grids().IsPlaceable(GrabbedObject,
                                     _cellUI.ContainerInfo,
                                     _cellUI.GridCoordinates);
+            Debug.Log("Is placeable: " + isPlaceable);
+            Inventory.Events.Controller.OnHighlight?.Invoke(GrabbedObject,
+                                    _cellUI.ContainerInfo,
+                                    _cellUI.GridCoordinates,
+                                    isPlaceable);
         }
 
         private void OnGrabOne(InputAction.CallbackContext context)

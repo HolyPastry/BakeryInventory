@@ -254,7 +254,15 @@ namespace Bakery
                                     out numReleased);
         }
 
-
+        public bool IsPlaceable(RotatableGrid grabbedObject, ContainerInfo containerInfo, Vector2Int gridCoordinates)
+        {
+             var inventory = GetInventory(containerInfo);
+            if (inventory == null)
+                return false;
+            
+            return inventory.CanStack(grabbedObject, gridCoordinates) || 
+                    inventory.FitIn(new RotatableGrid(grabbedObject), gridCoordinates, grabbedObject.Rotation);
+        }
     }
 
 }

@@ -10,6 +10,7 @@ namespace Bakery
         [SerializeField, Self] private Image image;
         [SerializeField] private Color _highlightColor;
         [SerializeField] private Color _defaultColor;
+        [SerializeField] private Color _invalidColor;
 
         public Vector2Int Size
         {
@@ -42,8 +43,13 @@ namespace Bakery
         internal void CleanHighlight()
             => image.color = _defaultColor;
 
-        internal void Highlight()
-            => image.color = _highlightColor;
+        internal void Highlight(bool isValid)
+        {
+            if(IsLocked)
+                CleanHighlight();
+            else
+                image.color = isValid ? _highlightColor : _invalidColor;
+        }
 
     }
 }

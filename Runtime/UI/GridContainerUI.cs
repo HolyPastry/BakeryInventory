@@ -80,35 +80,39 @@ namespace Bakery
 
         private void OnHighlight(RotatableGrid grabbedObject,
                             ContainerInfo containerInfo, Vector2Int
-                            hoveredCoordinates)
+                            hoveredCoordinates,bool IsValid)
         {
             if (containerInfo != _containerInfo) return;
-
-            if (grabbedObject == null)
-            {
-                foreach (var cell in _cells)
-                {
-                    if (cell.GridCoordinates == hoveredCoordinates)
-                        cell.Highlight();
-                    else
-                        cell.CleanHighlight();
-                }
-                return;
-            }
+     
+            if(HighlightEmptyHand(grabbedObject,hoveredCoordinates)) return;
+            
 
             var rotatableGrid = new RotatableGrid(grabbedObject)
             {
                 RootPosition = hoveredCoordinates
             };
-            Highlight(rotatableGrid);
+            Highlight(rotatableGrid, IsValid);
         }
 
-        public void Highlight(RotatableGrid rotatableGrid)
+        private bool HighlightEmptyHand(RotatableGrid grabbedObject, Vector2Int hoveredCoordinates)
+        {
+            if(grabbedObject != null) return false;
+            foreach (var cell in _cells)
+            {
+                if (cell.GridCoordinates == hoveredCoordinates)
+                    cell.Highlight(true);
+                else
+                    cell.CleanHighlight();
+            }
+            return true;
+        }
+
+        public void Highlight(RotatableGrid rotatableGrid,bool isValid)
         {
             foreach (var cell in _cells)
             {
                 if (rotatableGrid.WorldPositions.Any(pos => pos == cell.GridCoordinates))
-                    cell.Highlight();
+                    cell.Highlight(isValid);
                 else
                     cell.CleanHighlight();
             }

@@ -24,7 +24,7 @@ namespace Bakery
                 public static Action<RotatableGrid, InventoryHand> OnGrabbed = delegate { };
                 public static Action<GridObjectUI, InventoryHand, GridCellUI> OnReleased = delegate { };
                 public static Action<RotatableGrid> OnItemRotated = delegate { };
-                public static Action<RotatableGrid, ContainerInfo, Vector2Int> OnHighlight = delegate { };
+                public static Action<RotatableGrid, ContainerInfo, Vector2Int,bool> OnHighlight = delegate { };
                 public static Action OnCleanHighlight = delegate { };
             }
         }
@@ -112,6 +112,11 @@ namespace Bakery
             public bool IsEmpty(ContainerInfo containerInfo)
             {
                 return true;
+            }
+
+            public bool IsPlaceable(RotatableGrid grabbedObject, ContainerInfo containerInfo, Vector2Int gridCoordinates)
+            {
+                return false;
             }
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

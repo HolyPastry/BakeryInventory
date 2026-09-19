@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -18,6 +19,8 @@ namespace Bakery
         [SerializeReference] private TextMeshProUGUI _stackCountText;
         [SerializeReference] private Image CellBGPrefab;
 
+
+        public UnityEvent<bool> OnHighlightChanged = new();
         public UnityEvent<Bounds> OnGridUpdated = new();
 
         private RotatableGrid _grid;
@@ -181,6 +184,16 @@ namespace Bakery
         internal void UpdateStack()
         {
             SetupStack(_grid);
+        }
+
+        internal void CleanHighlight()
+        {
+            OnHighlightChanged.Invoke(false);
+        }
+
+        internal void Highlight()
+        {
+            OnHighlightChanged.Invoke(true);
         }
     }
 }

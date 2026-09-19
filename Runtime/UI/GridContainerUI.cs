@@ -112,10 +112,39 @@ namespace Bakery
             foreach (var cell in _cells)
             {
                 if (rotatableGrid.WorldPositions.Any(pos => pos == cell.GridCoordinates))
-                    cell.Highlight(isValid);
+                {
+                    if(!HighlightStackedObject(cell,isValid))
+                        cell.Highlight(isValid);
+                }
                 else
+                {
                     cell.CleanHighlight();
+                    CleanHighlightStackedObject(cell);
+                }
             }
+        }
+
+        private void CleanHighlightStackedObject(GridCellUI cell)
+        {
+            foreach (var gridObjectUI in _gridObjects)
+            {
+                if (gridObjectUI.Grid.WorldPositions.Any(pos => pos == cell.GridCoordinates))
+                    gridObjectUI.CleanHighlight();
+            }
+        }
+
+        private bool HighlightStackedObject(GridCellUI cell,bool isValid)
+        {   
+            if(!isValid) return false;
+            foreach (var gridObjectUI in _gridObjects)
+            {
+                if (!gridObjectUI.Grid.WorldPositions.Any(pos => pos == cell.GridCoordinates))
+                    continue;
+                
+                gridObjectUI.Highlight();
+                return true;    
+            }
+            return false;
         }
 
         private void OnCleanHighlight()

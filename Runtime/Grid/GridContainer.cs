@@ -188,7 +188,7 @@ namespace Bakery
         internal bool TryGetObjectAt(Vector2Int position, out RotatableGrid gridObject)
         {
             gridObject = Grids.Find(grid => grid.WorldPositions.Any(p => p == position));
-            return gridObject != null && !gridObject.Locked;
+            return gridObject != null;
         }
 
         internal int StackItem(RotatableGrid objectToStack, Vector2Int gridCoordinates, int numToStack = -1)

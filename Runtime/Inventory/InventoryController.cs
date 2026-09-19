@@ -141,6 +141,10 @@ namespace Bakery
             {
                 User.Cursor().Override(_interactiveCursorType);
             }
+            else
+            {
+                User.Cursor().RemoveOverride();
+            }
 
             var hoveredObject = User.Raycast().HoveredObject;
             if (hoveredObject == null ||

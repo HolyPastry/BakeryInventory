@@ -7,11 +7,9 @@ using UnityEngine;
 
 namespace Bakery
 {
-
     [Serializable]
     public class GridContainer : SerialData
     {
-
         public ContainerInfo ContainerInfo { get; set; }
         public int Count => Grids.Count;
         public List<RotatableGrid> Grids = new();
@@ -24,12 +22,15 @@ namespace Bakery
                 Inventory.Events.Grids.OnItemRemoved?.Invoke(this, grid);
                 Save();
             }
+            else
+            {
+                Debug.LogWarning($"Failed to remove item {grid} from inventory {ContainerInfo}");
+            }
 
             return removed;
         }
 
-        public bool Contains(RotatableGrid grid)
-                => Grids.Contains(grid);
+        public bool Contains(RotatableGrid grid) => Grids.Contains(grid);
 
         public bool Add(RotatableGrid grid)
         {
@@ -54,6 +55,7 @@ namespace Bakery
                     Debug.LogWarning($"Saved Grid couldn't be loaded:{grid.GrindInfoName}");
             }
         }
+
         public override void Serialize()
         {
             foreach (var grid in Grids)
@@ -64,28 +66,27 @@ namespace Bakery
 
         public void Save()
         {
-            if (!ContainerInfo.IsPersistent) return;
+            if (!ContainerInfo.IsPersistent)
+                return;
             SaveServices.Save(ContainerInfo.name, this);
         }
 
-        internal bool Place(RotatableGrid grabbedObject,
-                        Vector2Int gridCoordinates)
-            => Place(grabbedObject, gridCoordinates, -1, out _);
+        internal bool Place(RotatableGrid grabbedObject, Vector2Int gridCoordinates) =>
+            Place(grabbedObject, gridCoordinates, -1, out _);
 
-        internal bool Place(RotatableGrid grabbedObject,
-                        Vector2Int gridCoordinates,
-                        int numToRelease,
-                        out int numReleased)
+        internal bool Place(
+            RotatableGrid grabbedObject,
+            Vector2Int gridCoordinates,
+            int numToRelease,
+            out int numReleased
+        )
         {
             numReleased = 0;
             if (!FitIn(grabbedObject, gridCoordinates, grabbedObject.Rotation))
                 return false;
             if (numToRelease != -1 && numToRelease < grabbedObject.Amount)
             {
-                RotatableGrid copy = new(grabbedObject)
-                {
-                    Amount = numToRelease
-                };
+                RotatableGrid copy = new(grabbedObject) { Amount = numToRelease };
                 grabbedObject.Amount -= numToRelease;
                 numReleased = numToRelease;
                 Grids.AddUnique(copy);
@@ -115,13 +116,14 @@ namespace Bakery
             return !IsOutsideGrid(grid) && OverlapsExisting(grid);
         }
 
-        public bool CanStack(RotatableGrid grid,
-                        Vector2Int coordinate)
+        public bool CanStack(RotatableGrid grid, Vector2Int coordinate)
         {
             foreach (var otherItem in Grids)
             {
-                if (otherItem.WorldPositions.Any(p => p == coordinate) &&
-                    otherItem.CanStackWith(grid))
+                if (
+                    otherItem.WorldPositions.Any(p => p == coordinate)
+                    && otherItem.CanStackWith(grid)
+                )
                 {
                     return true;
                 }
@@ -191,7 +193,11 @@ namespace Bakery
             return gridObject != null;
         }
 
-        internal int StackItem(RotatableGrid objectToStack, Vector2Int gridCoordinates, int numToStack = -1)
+        internal int StackItem(
+            RotatableGrid objectToStack,
+            Vector2Int gridCoordinates,
+            int numToStack = -1
+        )
         {
             if (numToStack == -1)
                 numToStack = objectToStack.Amount;
@@ -213,7 +219,12 @@ namespace Bakery
             return objectToStack.Amount;
         }
 
-        internal bool TryPlaceAt(RotatableGrid grabbedObject, Vector2Int gridCoordinates, int numToRelease, out int numReleased)
+        internal bool TryPlaceAt(
+            RotatableGrid grabbedObject,
+            Vector2Int gridCoordinates,
+            int numToRelease,
+            out int numReleased
+        )
         {
             if (!Compatible(grabbedObject))
             {
@@ -241,7 +252,6 @@ namespace Bakery
             }
             Save();
             return true;
-
         }
 
         private bool Compatible(RotatableGrid grabbedObject)
@@ -249,9 +259,11 @@ namespace Bakery
             return ContainerInfo.Compatible(grabbedObject.GridInfo);
         }
 
-        internal void PickUp(RotatableGrid hoveredObject,
-                                int numToGrab,
-                                out RotatableGrid pickedUpGrid)
+        internal void PickUp(
+            RotatableGrid hoveredObject,
+            int numToGrab,
+            out RotatableGrid pickedUpGrid
+        )
         {
             pickedUpGrid = null;
             if (numToGrab <= 0)
@@ -260,8 +272,7 @@ namespace Bakery
             if (hoveredObject.Amount > numToGrab)
             {
                 hoveredObject.Amount -= numToGrab;
-                pickedUpGrid = new RotatableGrid(hoveredObject)
-                { Amount = numToGrab };
+                pickedUpGrid = new RotatableGrid(hoveredObject) { Amount = numToGrab };
                 Inventory.Events.Grids.OnItemStackModified(hoveredObject, hoveredObject.Amount);
                 Save();
                 return;
@@ -279,7 +290,8 @@ namespace Bakery
         internal bool Remove(GridInfo item, int amount)
         {
             var matchingGrids = Grids.FindAll(g => g.GridInfo == item);
-            if (matchingGrids.Count == 0) return false;
+            if (matchingGrids.Count == 0)
+                return false;
             foreach (var grid in matchingGrids)
             {
                 if (grid.Amount > amount)

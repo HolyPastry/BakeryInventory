@@ -7,36 +7,47 @@ using UnityEngine.UI;
 
 namespace Bakery
 {
-
-
     public class GridObjectUI : MonoBehaviour, ICursorAttachable
     {
-        [SerializeField] private GameObject _hiddable;
-        [SerializeField] private GridInfo _gridInfo;
-        [SerializeField] private Transform _background;
-        [SerializeField] private Image _itemSprite;
-        [SerializeReference] private GameObject _stackBg;
-        [SerializeReference] private TextMeshProUGUI _stackCountText;
-        [SerializeReference] private Image CellBGPrefab;
+        [SerializeField]
+        private GameObject _hiddable;
 
+        [SerializeField]
+        private GridInfo _gridInfo;
+
+        [SerializeField]
+        private Transform _background;
+
+        [SerializeField]
+        private Image _itemSprite;
+
+        [SerializeReference]
+        private GameObject _stackBg;
+
+        [SerializeReference]
+        private TextMeshProUGUI _stackCountText;
+
+        [SerializeReference]
+        private Image CellBGPrefab;
 
         public UnityEvent<bool> OnHighlightChanged = new();
         public UnityEvent<Bounds> OnGridUpdated = new();
 
         private RotatableGrid _grid;
-        private Vector2Int CellSize => CellBGPrefab == null ?
-                        Vector2Int.zero : new Vector2Int((int)CellBGPrefab.rectTransform.sizeDelta.x,
-                                                        (int)CellBGPrefab.rectTransform.sizeDelta.y);
+        private Vector2Int CellSize =>
+            CellBGPrefab == null
+                ? Vector2Int.zero
+                : new Vector2Int(
+                    (int)CellBGPrefab.rectTransform.sizeDelta.x,
+                    (int)CellBGPrefab.rectTransform.sizeDelta.y
+                );
         private InstancePool<Image> _cellBgs;
 
         public RotatableGrid Grid => _grid;
 
         private RectTransform rectTransform => transform as RectTransform;
 
-        public Vector2 Size
-        {
-            get; private set;
-        }
+        public Vector2 Size { get; private set; }
         public bool Grabbed => _grid != null && _grid.Grabbed;
         public bool FullStack => _gridInfo != null && _grid.Amount >= _gridInfo.StackCapacity;
 
@@ -48,7 +59,6 @@ namespace Bakery
             get => _hiddable.activeSelf;
             set => _hiddable.SetActive(value);
         }
-
 
         void Awake()
         {
@@ -63,12 +73,10 @@ namespace Bakery
         void OnDisable()
         {
             Inventory.Events.Controller.OnItemRotated -= OnItemRotated;
-
         }
 
         public void Grab()
         {
-
             _grid.Grabbed = true;
             _hiddable.SetActive(false);
             //UpdateGrid(Grid);
@@ -91,15 +99,14 @@ namespace Bakery
 
         private void OnItemRotated(RotatableGrid grid)
         {
-            if (grid != _grid) return;
+            if (grid != _grid)
+                return;
             UpdateGrid(grid);
         }
 
         private void SetupStack(RotatableGrid grid)
         {
-            if (grid != null &&
-                _gridInfo.StackCapacity > 1 &&
-                grid.Amount > 1)
+            if (grid != null && _gridInfo.StackCapacity > 1 && grid.Amount > 1)
             {
                 _stackBg.SetActive(true);
 
@@ -111,24 +118,33 @@ namespace Bakery
             }
         }
 
-        internal void Initialize(RotatableGrid grid)
+        public void Initialize(RotatableGrid grid)
         {
             UpdateGrid(grid);
         }
 
         public bool Overlaps(RectTransform rectTransform)
         {
-            Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(this.transform, _background);
-            return bounds.Intersects(RectTransformUtility.CalculateRelativeRectTransformBounds(this.transform, rectTransform));
+            Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(
+                this.transform,
+                _background
+            );
+            return bounds.Intersects(
+                RectTransformUtility.CalculateRelativeRectTransformBounds(
+                    this.transform,
+                    rectTransform
+                )
+            );
         }
 
         private void UpdateGrid(RotatableGrid grid)
         {
-
             _grid = grid;
             _cellBgs.Clear();
-            rectTransform.anchoredPosition = new Vector2(grid.RootPosition.x * CellSize.x,
-                                                -grid.RootPosition.y * CellSize.y);
+            rectTransform.anchoredPosition = new Vector2(
+                grid.RootPosition.x * CellSize.x,
+                -grid.RootPosition.y * CellSize.y
+            );
 
             _gridInfo = grid.GridInfo;
             SetupStack(grid);
@@ -136,42 +152,66 @@ namespace Bakery
             {
                 var cellBg = _cellBgs.Add();
                 cellBg.rectTransform.sizeDelta = new Vector2(CellSize.x, CellSize.y);
-                cellBg.rectTransform.anchoredPosition =
-                    new Vector2(pos.x * CellSize.x, -pos.y * CellSize.y);
-
+                cellBg.rectTransform.anchoredPosition = new Vector2(
+                    pos.x * CellSize.x,
+                    -pos.y * CellSize.y
+                );
             }
             Size = _gridInfo.Size * CellSize;
 
             _itemSprite.sprite = _gridInfo.Sprite;
 
-            var cellBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(transform, _background);
+            var cellBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(
+                transform,
+                _background
+            );
 
             switch (grid.Rotation)
             {
                 case 0:
                     _itemSprite.rectTransform.localRotation = Quaternion.Euler(Vector3.zero);
-                    _itemSprite.rectTransform.sizeDelta = new Vector2(cellBounds.size.x, cellBounds.size.y);
+                    _itemSprite.rectTransform.sizeDelta = new Vector2(
+                        cellBounds.size.x,
+                        cellBounds.size.y
+                    );
                     break;
                 case 1:
-                    _itemSprite.rectTransform.localRotation = Quaternion.Euler(new Vector3(0, 0, 90));
-                    _itemSprite.rectTransform.sizeDelta = new Vector2(cellBounds.size.y, cellBounds.size.x);
+                    _itemSprite.rectTransform.localRotation = Quaternion.Euler(
+                        new Vector3(0, 0, 90)
+                    );
+                    _itemSprite.rectTransform.sizeDelta = new Vector2(
+                        cellBounds.size.y,
+                        cellBounds.size.x
+                    );
                     break;
                 case 2:
-                    _itemSprite.rectTransform.localRotation = Quaternion.Euler(new Vector3(0, 0, 180));
-                    _itemSprite.rectTransform.sizeDelta = new Vector2(cellBounds.size.x, cellBounds.size.y);
+                    _itemSprite.rectTransform.localRotation = Quaternion.Euler(
+                        new Vector3(0, 0, 180)
+                    );
+                    _itemSprite.rectTransform.sizeDelta = new Vector2(
+                        cellBounds.size.x,
+                        cellBounds.size.y
+                    );
                     break;
                 case 3:
-                    _itemSprite.rectTransform.localRotation = Quaternion.Euler(new Vector3(0, 0, 270));
-                    _itemSprite.rectTransform.sizeDelta = new Vector2(cellBounds.size.y, cellBounds.size.x);
+                    _itemSprite.rectTransform.localRotation = Quaternion.Euler(
+                        new Vector3(0, 0, 270)
+                    );
+                    _itemSprite.rectTransform.sizeDelta = new Vector2(
+                        cellBounds.size.y,
+                        cellBounds.size.x
+                    );
                     break;
             }
 
-            _itemSprite.rectTransform.anchoredPosition = new Vector2(cellBounds.center.x, cellBounds.center.y);
+            _itemSprite.rectTransform.anchoredPosition = new Vector2(
+                cellBounds.center.x,
+                cellBounds.center.y
+            );
             OnGridUpdated.Invoke(cellBounds);
-
         }
 
-        internal void Place(RotatableGrid grid)
+        public void Place(RotatableGrid grid)
         {
             UpdateGrid(grid);
         }
@@ -181,17 +221,17 @@ namespace Bakery
             transform.position = position;
         }
 
-        internal void UpdateStack()
+        public void UpdateStack()
         {
             SetupStack(_grid);
         }
 
-        internal void CleanHighlight()
+        public void CleanHighlight()
         {
             OnHighlightChanged.Invoke(false);
         }
 
-        internal void Highlight()
+        public void Highlight()
         {
             OnHighlightChanged.Invoke(true);
         }

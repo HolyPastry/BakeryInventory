@@ -8,18 +8,24 @@ namespace Bakery
 {
     public class GridContainerUI : MonoBehaviour
     {
-        [SerializeField] private ContainerInfo _containerInfo;
-        [SerializeField] private GridCellUI _cellPrefab;
-        [SerializeField] private RectTransform _gridObjectUIContainer;
-        [SerializeField] private RectTransform _cellsContainer;
+        [SerializeField]
+        private ContainerInfo _containerInfo;
+
+        [SerializeField]
+        private GridCellUI _cellPrefab;
+
+        [SerializeField]
+        private RectTransform _gridObjectUIContainer;
+
+        [SerializeField]
+        private RectTransform _cellsContainer;
 
         public ContainerInfo ContainerInfo => _containerInfo;
 
-
         private Vector2Int CellSize => _cellPrefab.Size;
         private List<GridCellUI> _cells = new();
+        private bool _initialized;
         private readonly List<GridObjectUI> _gridObjects = new();
-
 
         void Awake()
         {
@@ -35,35 +41,50 @@ namespace Bakery
         {
             if (_containerInfo == null)
             {
-                Debug.LogWarning($"GridInfo reference is missing in GridUIBuilder {this.name}", this);
+                Debug.LogWarning(
+                    $"GridInfo reference is missing in GridUIBuilder {this.name}",
+                    this
+                );
                 return;
             }
             if (_cellPrefab == null)
             {
-                Debug.LogWarning($"CellPrefab reference is missing in GridUIBuilder {this.name}", this);
+                Debug.LogWarning(
+                    $"CellPrefab reference is missing in GridUIBuilder {this.name}",
+                    this
+                );
                 return;
             }
         }
+
         void OnEnable()
         {
             Inventory.Events.Grids.OnItemStackModified += OnItemStackModified;
+            Inventory.Events.Grids.OnItemAdded += OnItemAdded;
+            Inventory.Events.Grids.OnItemRemoved += OnItemRemoved;
 
             Inventory.Events.Controller.OnHighlight += OnHighlight;
             Inventory.Events.Controller.OnCleanHighlight += OnCleanHighlight;
             Inventory.Events.Controller.OnItemRotated += OnItemRotated;
+            if (_initialized)
+                UpdateContent();
         }
+
         void OnDisable()
         {
-
             Inventory.Events.Grids.OnItemStackModified -= OnItemStackModified;
-
             Inventory.Events.Controller.OnHighlight -= OnHighlight;
             Inventory.Events.Controller.OnCleanHighlight -= OnCleanHighlight;
             Inventory.Events.Controller.OnItemRotated -= OnItemRotated;
         }
 
-
-
+        IEnumerator Start()
+        {
+            yield return FlowServices.WaitUntilEndOfSetup();
+            yield return Inventory.Grids().WaitUntilReady;
+            UpdateContent();
+            _initialized = true;
+        }
 
         private void OnItemStackModified(RotatableGrid hoveredObject, int amount)
         {
@@ -78,25 +99,45 @@ namespace Bakery
             // OnCleanHighlight();
         }
 
-        private void OnHighlight(RotatableGrid grabbedObject,
-                            ContainerInfo containerInfo, Vector2Int
-                            hoveredCoordinates,bool IsValid)
+        private void OnItemRemoved(GridContainer inventory, RotatableGrid grid)
         {
-            if (containerInfo != _containerInfo) return;
-     
-            if(HighlightEmptyHand(grabbedObject,hoveredCoordinates)) return;
-            
+            if (inventory.ContainerInfo != _containerInfo)
+                return;
+            RemoveItem(grid);
+        }
+
+        private void OnItemAdded(GridContainer inventory, RotatableGrid grid)
+        {
+            if (inventory.ContainerInfo != _containerInfo)
+                return;
+
+            AddItem(grid);
+        }
+
+        private void OnHighlight(
+            RotatableGrid grabbedObject,
+            ContainerInfo containerInfo,
+            Vector2Int hoveredCoordinates,
+            bool IsValid
+        )
+        {
+            if (containerInfo != _containerInfo)
+                return;
+
+            if (HighlightEmptyHand(grabbedObject, hoveredCoordinates))
+                return;
 
             var rotatableGrid = new RotatableGrid(grabbedObject)
             {
-                RootPosition = hoveredCoordinates
+                RootPosition = hoveredCoordinates,
             };
             Highlight(rotatableGrid, IsValid);
         }
 
         private bool HighlightEmptyHand(RotatableGrid grabbedObject, Vector2Int hoveredCoordinates)
         {
-            if(grabbedObject != null) return false;
+            if (grabbedObject != null)
+                return false;
             foreach (var cell in _cells)
             {
                 if (cell.GridCoordinates == hoveredCoordinates)
@@ -107,13 +148,13 @@ namespace Bakery
             return true;
         }
 
-        public void Highlight(RotatableGrid rotatableGrid,bool isValid)
+        public void Highlight(RotatableGrid rotatableGrid, bool isValid)
         {
             foreach (var cell in _cells)
             {
                 if (rotatableGrid.WorldPositions.Any(pos => pos == cell.GridCoordinates))
                 {
-                    if(!HighlightStackedObject(cell,isValid))
+                    if (!HighlightStackedObject(cell, isValid))
                         cell.Highlight(isValid);
                 }
                 else
@@ -133,16 +174,17 @@ namespace Bakery
             }
         }
 
-        private bool HighlightStackedObject(GridCellUI cell,bool isValid)
-        {   
-            if(!isValid) return false;
+        private bool HighlightStackedObject(GridCellUI cell, bool isValid)
+        {
+            if (!isValid)
+                return false;
             foreach (var gridObjectUI in _gridObjects)
             {
                 if (!gridObjectUI.Grid.WorldPositions.Any(pos => pos == cell.GridCoordinates))
                     continue;
-                
+
                 gridObjectUI.Highlight();
-                return true;    
+                return true;
             }
             return false;
         }
@@ -160,18 +202,19 @@ namespace Bakery
             {
                 gridObjectUI.Visibility = false;
                 _gridObjects.Remove(gridObjectUI);
-                InventorySpawner.Destroy(gridObjectUI);
+                InventoryUISpawner.Destroy(gridObjectUI);
             }
         }
 
-
-        public GridObjectUI AddItem(RotatableGrid grid, InventorySpawner spawner)
+        public GridObjectUI AddItem(RotatableGrid grid)
         {
-            var gridObjectUI =
-                spawner.Spawn(_gridObjectUIContainer, grid);
+            var gridObjectUI = InventoryUISpawner.Spawn(_gridObjectUIContainer, grid);
             if (gridObjectUI == null)
             {
-                Debug.LogWarning($"GridObjectUI not found for item {grid.GridInfo.name} in GridUIBuilder {this.name}", this);
+                Debug.LogWarning(
+                    $"GridObjectUI not found for item {grid.GridInfo.name} in GridUIBuilder {this.name}",
+                    this
+                );
                 return null;
             }
             _gridObjects.Add(gridObjectUI);
@@ -208,26 +251,29 @@ namespace Bakery
         {
             var gridObjectUI = _gridObjects.Find(obj => obj.Grid == hoveredObject);
             if (gridObjectUI == null)
-                Debug.LogWarning($"GridObjectUI not found for item {hoveredObject.GridInfo.name} in GridUIBuilder {this.name}", this);
+                Debug.LogWarning(
+                    $"GridObjectUI not found for item {hoveredObject.GridInfo.name} in GridUIBuilder {this.name}",
+                    this
+                );
             return gridObjectUI;
         }
 
         internal void Clear()
         {
-
             while (_gridObjects.Count > 0)
             {
                 var grid = _gridObjects[0];
                 _gridObjects.Remove(grid);
-                InventorySpawner.Destroy(grid);
+                InventoryUISpawner.Destroy(grid);
             }
         }
 
-        internal void Initialize(InventorySpawner spawner)
+        internal void UpdateContent()
         {
+            Clear();
             var allItems = Inventory.Grids().GetAllItems(_containerInfo);
             foreach (var item in allItems)
-                AddItem(item, spawner);
+                AddItem(item);
         }
     }
 }

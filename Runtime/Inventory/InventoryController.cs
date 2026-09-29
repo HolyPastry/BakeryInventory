@@ -11,22 +11,31 @@ namespace Bakery
     public class InventoryController : MonoBehaviour
     {
         [Header("Local References")]
-        [SerializeReference] private InventoryHand _hand;
-        [SerializeReference] private List<InventoryTrashUI> _trashes = new();
-        [SerializeReference] private InventorySpawner _spawner;
+        [SerializeReference]
+        private InventoryHand _hand;
 
+        [SerializeReference]
+        private List<InventoryTrashUI> _trashes = new();
 
         [Header("Input Actions")]
-        [SerializeField] private InputActionReference _grabOne;
-        [SerializeField] private InputActionReference _releaseOne;
-        [SerializeField] private InputActionReference _grabAll;
-        [SerializeField] private InputActionReference _releaseAll;
-        [SerializeField] private InputActionReference _rotate;
+        [SerializeField]
+        private InputActionReference _grabOne;
 
+        [SerializeField]
+        private InputActionReference _releaseOne;
+
+        [SerializeField]
+        private InputActionReference _grabAll;
+
+        [SerializeField]
+        private InputActionReference _releaseAll;
+
+        [SerializeField]
+        private InputActionReference _rotate;
 
         [Header("Cursor")]
-        [SerializeField] private CursorType _interactiveCursorType;
-
+        [SerializeField]
+        private CursorType _interactiveCursorType;
 
         public UnityEvent<RotatableGrid> OnGrab = new();
         public UnityEvent<RotatableGrid> OnRelease = new();
@@ -39,12 +48,13 @@ namespace Bakery
                 if (_hand.IsEmpty)
                     return null;
                 if (_hand.GrabbedObject.Grid == null)
-                    Debug.LogWarning($"Grid should not be null inside the GrabbedObject in the Hand: {_hand.GrabbedObject}");
+                    Debug.LogWarning(
+                        $"Grid should not be null inside the GrabbedObject in the Hand: {_hand.GrabbedObject}"
+                    );
 
                 return _hand.GrabbedObject.Grid;
             }
         }
-
 
         private GridCellUI _cellUI;
 
@@ -52,18 +62,13 @@ namespace Bakery
         // being processed in the same frame
         private bool _inputProcessed;
 
-        private List<GridContainerUI> _containers = new();
-        private bool _ready;
-
         void Awake()
         {
             _hoveredGrid = null;
-            GetComponentsInChildren(true, _containers);
         }
 
         void OnEnable()
         {
-
             if (_releaseOne != null)
                 _releaseOne.action.canceled += OnReleaseOne;
 
@@ -78,23 +83,10 @@ namespace Bakery
 
             if (_rotate != null)
                 _rotate.action.performed += OnRotate;
-
-            Inventory.Events.Grids.OnItemAdded += OnItemAdded;
-            Inventory.Events.Grids.OnItemRemoved += OnItemRemoved;
-
-            if (_ready)
-                UpdateGrids();
-        }
-
-        private void UpdateGrids()
-        {
-            foreach (var container in _containers)
-                container.Initialize(_spawner);
         }
 
         void OnDisable()
         {
-
             if (_grabOne != null)
                 _grabOne.action.canceled -= OnGrabOne;
 
@@ -109,27 +101,6 @@ namespace Bakery
 
             if (_rotate != null)
                 _rotate.action.performed -= OnRotate;
-
-            Inventory.Events.Grids.OnItemAdded -= OnItemAdded;
-            Inventory.Events.Grids.OnItemRemoved -= OnItemRemoved;
-
-            CleanGrids();
-        }
-
-        private void CleanGrids()
-        {
-            foreach (var container in _containers)
-            {
-                container.Clear();
-            }
-        }
-
-        IEnumerator Start()
-        {
-            yield return Inventory.Grids().WaitUntilReady;
-
-            UpdateGrids();
-            _ready = true;
         }
 
         void Update()
@@ -147,8 +118,7 @@ namespace Bakery
             }
 
             var hoveredObject = User.Raycast().HoveredObject;
-            if (hoveredObject == null ||
-                !hoveredObject.TryGetComponent<GridCellUI>(out _cellUI))
+            if (hoveredObject == null || !hoveredObject.TryGetComponent<GridCellUI>(out _cellUI))
             {
                 _cellUI = null;
                 _hoveredGrid = null;
@@ -156,15 +126,16 @@ namespace Bakery
                 return;
             }
 
-            Inventory.Grids().TryGetObjectAt(_cellUI.ContainerInfo,
-                                                _cellUI.GridCoordinates,
-                                                out _hoveredGrid);
+            Inventory
+                .Grids()
+                .TryGetObjectAt(_cellUI.ContainerInfo, _cellUI.GridCoordinates, out _hoveredGrid);
             UpdateHighlight();
         }
 
         private void OnReleaseAll(InputAction.CallbackContext context)
         {
-            if (_inputProcessed || GrabbedObject == null) return;
+            if (_inputProcessed || GrabbedObject == null)
+                return;
 
             if (_trashes != null && _trashes.Any(t => t.IsHovering))
             {
@@ -176,14 +147,16 @@ namespace Bakery
 
         private void Trash(RotatableGrid grabbedObject, int numToTrash = -1)
         {
-            if (grabbedObject == null) return;
+            if (grabbedObject == null)
+                return;
             var trash = _trashes.FirstOrDefault(t => t.IsHovering);
-            if (trash == null) return;
+            if (trash == null)
+                return;
             if (numToTrash == -1 || numToTrash >= _hand.AmountHeld)
             {
                 var releasedObject = _hand.Release();
                 trash.Trash();
-                InventorySpawner.Destroy(releasedObject);
+                InventoryUISpawner.Destroy(releasedObject);
                 return;
             }
 
@@ -193,37 +166,46 @@ namespace Bakery
 
         private void OnRotate(InputAction.CallbackContext context)
         {
-            if (GrabbedObject == null) return;
+            if (GrabbedObject == null)
+                return;
             GrabbedObject.Rotate();
             Inventory.Events.Controller.OnItemRotated?.Invoke(GrabbedObject);
-
         }
 
         private void UpdateHighlight()
         {
-            if (_cellUI == null ||
-                    (GrabbedObject != null &&
-                    !_cellUI.ContainerInfo.Compatible(GrabbedObject.GridInfo)))
+            if (
+                _cellUI == null
+                || (
+                    GrabbedObject != null
+                    && !_cellUI.ContainerInfo.Compatible(GrabbedObject.GridInfo)
+                )
+            )
             {
                 Inventory.Events.Controller.OnCleanHighlight?.Invoke();
                 return;
             }
-            bool isPlaceable = GrabbedObject != null && 
-                                Inventory.Grids().IsPlaceable(GrabbedObject,
-                                    _cellUI.ContainerInfo,
-                                    _cellUI.GridCoordinates);
-            
-            Inventory.Events.Controller.OnHighlight?.Invoke(GrabbedObject,
-                                    _cellUI.ContainerInfo,
-                                    _cellUI.GridCoordinates,
-                                    isPlaceable);
+            bool isPlaceable =
+                GrabbedObject != null
+                && Inventory
+                    .Grids()
+                    .IsPlaceable(GrabbedObject, _cellUI.ContainerInfo, _cellUI.GridCoordinates);
+
+            Inventory.Events.Controller.OnHighlight?.Invoke(
+                GrabbedObject,
+                _cellUI.ContainerInfo,
+                _cellUI.GridCoordinates,
+                isPlaceable
+            );
         }
 
         private void OnGrabOne(InputAction.CallbackContext context)
         {
-            if (_inputProcessed || _hoveredGrid == null) return;
+            if (_inputProcessed || _hoveredGrid == null)
+                return;
 
-            if (!_hand.CanGrab(_hoveredGrid)) return;
+            if (!_hand.CanGrab(_hoveredGrid))
+                return;
 
             if (Grab(_hoveredGrid, 1))
                 _inputProcessed = true;
@@ -231,15 +213,19 @@ namespace Bakery
 
         private void OnGrabAll(InputAction.CallbackContext context)
         {
-            if (_inputProcessed || _hoveredGrid == null) return;
-            if (!_hand.CanGrab(_hoveredGrid)) return;
+            if (_inputProcessed || _hoveredGrid == null)
+                return;
+            if (!_hand.CanGrab(_hoveredGrid))
+                return;
 
             if (Grab(_hoveredGrid))
                 _inputProcessed = true;
         }
+
         private void OnReleaseOne(InputAction.CallbackContext context)
         {
-            if (_inputProcessed || GrabbedObject == null) return;
+            if (_inputProcessed || GrabbedObject == null)
+                return;
             if (_trashes != null && _trashes.Any(t => t.IsHovering))
                 Trash(GrabbedObject, 1);
 
@@ -249,17 +235,24 @@ namespace Bakery
 
         private void Release(RotatableGrid grabbedObject, int numToRelease = -1)
         {
-            if (_cellUI == null || grabbedObject == null) return;
+            if (_cellUI == null || grabbedObject == null)
+                return;
 
             var stackBeforeRelease = grabbedObject.Amount;
             if (numToRelease == -1)
                 numToRelease = grabbedObject.Amount;
 
-            if (!Inventory.Grids().TryPlaceAt(grabbedObject,
-                                        _cellUI.ContainerInfo,
-                                        _cellUI.GridCoordinates,
-                                        numToRelease,
-                                        out int numReleased))
+            if (
+                !Inventory
+                    .Grids()
+                    .TryPlaceAt(
+                        grabbedObject,
+                        _cellUI.ContainerInfo,
+                        _cellUI.GridCoordinates,
+                        numToRelease,
+                        out int numReleased
+                    )
+            )
                 return;
 
             if (numReleased == 0)
@@ -272,8 +265,6 @@ namespace Bakery
             }
             else
             {
-                //just to update the number in the UI. 
-                // the grabbed object's stack has been reduced but the hand still holds it
                 _hand.ModifyStack(0);
             }
         }
@@ -281,7 +272,7 @@ namespace Bakery
         public void RemoveFromHand()
         {
             var gridObjectUI = _hand.Release();
-            InventorySpawner.Destroy(gridObjectUI);
+            InventoryUISpawner.Destroy(gridObjectUI);
             Inventory.Events.Controller.OnReleased?.Invoke(gridObjectUI, _hand, _cellUI);
         }
 
@@ -290,12 +281,11 @@ namespace Bakery
             if (numToGrab == -1)
                 numToGrab = hoveredObject.Amount;
 
-            //If the hand is already holding an object, 
+            //If the hand is already holding an object,
             // we can only grab so much
             numToGrab = _hand.NumCanGrab(hoveredObject, numToGrab);
             if (numToGrab <= 0)
                 return false;
-
 
             Inventory.Grids().PickUp(hoveredObject, numToGrab, out RotatableGrid pickedUpObject);
 
@@ -317,37 +307,21 @@ namespace Bakery
             {
                 Amount = quantity,
                 Stackable = stackable,
-                Id = id
+                Id = id,
             };
             return CreateInHand(grid);
         }
 
         private GridObjectUI CreateInHand(RotatableGrid pickedUpObject)
         {
-            GridObjectUI gridObject = _spawner.Spawn(_hand.transform as RectTransform,
-                                                    pickedUpObject);
+            GridObjectUI gridObject = InventoryUISpawner.Spawn(
+                _hand.transform as RectTransform,
+                pickedUpObject
+            );
 
             _hand.Grab(gridObject);
             OnGrab.Invoke(pickedUpObject);
             return gridObject;
-        }
-
-        private void OnItemRemoved(GridContainer inventory, RotatableGrid grid)
-        {
-
-            if (!_containers.Exists(ui => ui.ContainerInfo == inventory.ContainerInfo))
-                return;
-            var container = _containers.First(ui => ui.ContainerInfo == inventory.ContainerInfo);
-            container.RemoveItem(grid);
-        }
-
-        private void OnItemAdded(GridContainer inventory, RotatableGrid grid)
-        {
-            if (!_containers.Exists(ui => ui.ContainerInfo == inventory.ContainerInfo))
-                return;
-            var container = _containers.First(ui => ui.ContainerInfo == inventory.ContainerInfo);
-
-            container.AddItem(grid, _spawner);
         }
     }
 }

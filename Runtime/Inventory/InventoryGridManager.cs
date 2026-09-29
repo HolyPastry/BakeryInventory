@@ -117,6 +117,12 @@ namespace Bakery
                 Inventory.Events.Grids.OnItemRemoved?.Invoke(GetInventory(inventory), item);
                 return true;
             }
+            else
+            {
+                Debug.LogWarning(
+                    $"Failed to remove item {item.GridInfo.name} from inventory {inventory}"
+                );
+            }
             return false;
         }
 

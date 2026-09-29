@@ -80,7 +80,7 @@ namespace Bakery
 
         IEnumerator Start()
         {
-            yield return FlowServices.WaitUntilEndOfSetup();
+            yield return FlowServices.WaitUntilReady();
             yield return Inventory.Grids().WaitUntilReady;
             UpdateContent();
             _initialized = true;

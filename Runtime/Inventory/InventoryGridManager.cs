@@ -136,13 +136,13 @@ namespace Bakery
 
         public bool Remove(ContainerInfo inventory, GridInfo item, int amount)
         {
-            var container = _containers.FirstOrDefault(c => c.ContainerInfo = inventory);
-            if (container == null)
+            var container = GetInventory(inventory);
+            if (!container.Remove(item, amount))
             {
-                Debug.LogWarning($"Container is not found: {inventory}");
+                Debug.LogWarning($"Failed to remove item {item.name} from inventory {inventory}");
                 return false;
             }
-            return container.Remove(item, amount);
+            return true;
         }
 
         public bool Create(

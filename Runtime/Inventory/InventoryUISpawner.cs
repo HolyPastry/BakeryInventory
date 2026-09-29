@@ -6,10 +6,10 @@ namespace Bakery
     public class InventoryUISpawner : MonoBehaviour
     {
         [SerializeField]
-        private GridObjectUI _gridObjectUIPrefab;
+        protected GridObjectUI _gridObjectUIPrefab;
 
         [SerializeField]
-        private GridObjectUI _lockedGridUIPrefab;
+        protected GridObjectUI _lockedGridUIPrefab;
 
         public static Func<RectTransform, RotatableGrid, GridObjectUI> Spawn = (parent, grid) =>
             null;

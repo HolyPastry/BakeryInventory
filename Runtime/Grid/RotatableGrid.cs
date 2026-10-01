@@ -56,7 +56,6 @@ namespace Bakery
             }
         }
 
-
         public override IEnumerable<Vector2Int> WorldPositions
         {
             get
@@ -74,7 +73,6 @@ namespace Bakery
 
         private Vector2Int RotatePosition(Vector2Int localPos, int rotation)
         {
-
             return rotation switch
             {
                 // 0 degrees
@@ -93,6 +91,7 @@ namespace Bakery
         {
             Rotation = (Rotation + 1) % 4;
         }
+
         public void RotateCounterClockwise()
         {
             Rotation = (Rotation + 3) % 4; // Adding 3 is equivalent to subtracting 1 in modulo 4
@@ -105,10 +104,38 @@ namespace Bakery
 
         internal bool CanStackWith(RotatableGrid grid)
         {
-            return Stackable &&
-                GridInfo == grid.GridInfo &&
-                Amount < GridInfo.StackCapacity;
+            return Stackable && GridInfo == grid.GridInfo && Amount < GridInfo.StackCapacity;
+        }
+
+        public static bool operator ==(RotatableGrid a, RotatableGrid b)
+        {
+            if (a is null && b is null)
+                return true;
+            if (a is null || b is null)
+                return false;
+
+            return a.GridInfo == b.GridInfo
+                && a.RootPosition == b.RootPosition
+                && a.Rotation == b.Rotation
+                && a.Amount == b.Amount
+                && a.Stackable == b.Stackable;
+        }
+
+        public static bool operator !=(RotatableGrid a, RotatableGrid b)
+        {
+            return !(a == b);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is RotatableGrid grid)
+                return this == grid;
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(GridInfo, RootPosition, Rotation, Amount, Stackable);
         }
     }
-
 }

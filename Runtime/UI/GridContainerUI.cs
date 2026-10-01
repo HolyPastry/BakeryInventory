@@ -25,6 +25,7 @@ namespace Bakery
         private Vector2Int CellSize => _cellPrefab.Size;
         private List<GridCellUI> _cells = new();
         private bool _initialized;
+        private bool _needUpdate;
         private readonly List<GridObjectUI> _gridObjects = new();
 
         void Awake()
@@ -270,10 +271,26 @@ namespace Bakery
 
         internal void UpdateContent()
         {
-            Clear();
             var allItems = Inventory.Grids().GetAllItems(_containerInfo);
+            if (ContentUnchanged(allItems))
+                return;
+            Clear();
+
             foreach (var item in allItems)
                 AddItem(item);
+        }
+
+        private bool ContentUnchanged(IEnumerable<RotatableGrid> allItems)
+        {
+            if (_gridObjects.Count != allItems.Count())
+                return false;
+            foreach (var gridObject in _gridObjects)
+                if (!allItems.Any(item => item == gridObject.Grid))
+                    return false;
+            foreach (var item in allItems)
+                if (!_gridObjects.Any(gridObject => gridObject.Grid == item))
+                    return false;
+            return true;
         }
     }
 }

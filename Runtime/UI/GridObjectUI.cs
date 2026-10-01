@@ -43,6 +43,15 @@ namespace Bakery
                 );
         private InstancePool<Image> _cellBgs;
 
+        private InstancePool<Image> CellBgs
+        {
+            get
+            {
+                _cellBgs ??= new(CellBGPrefab, _background);
+                return _cellBgs;
+            }
+        }
+
         public RotatableGrid Grid => _grid;
 
         private RectTransform rectTransform => transform as RectTransform;
@@ -58,11 +67,6 @@ namespace Bakery
         {
             get => _hiddable.activeSelf;
             set => _hiddable.SetActive(value);
-        }
-
-        void Awake()
-        {
-            _cellBgs = new(CellBGPrefab, _background);
         }
 
         void OnEnable()
@@ -140,7 +144,7 @@ namespace Bakery
         private void UpdateGrid(RotatableGrid grid)
         {
             _grid = grid;
-            _cellBgs.Clear();
+            CellBgs.Clear();
             rectTransform.anchoredPosition = new Vector2(
                 grid.RootPosition.x * CellSize.x,
                 -grid.RootPosition.y * CellSize.y
@@ -150,7 +154,7 @@ namespace Bakery
             SetupStack(grid);
             foreach (var pos in _grid.LocalPositions)
             {
-                var cellBg = _cellBgs.Add();
+                var cellBg = CellBgs.Add();
                 cellBg.rectTransform.sizeDelta = new Vector2(CellSize.x, CellSize.y);
                 cellBg.rectTransform.anchoredPosition = new Vector2(
                     pos.x * CellSize.x,

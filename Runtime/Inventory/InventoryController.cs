@@ -61,6 +61,7 @@ namespace Bakery
         //We use This flag to prevent multiple inputs from
         // being processed in the same frame
         private bool _inputProcessed;
+        private bool _cursorOverriden;
 
         void Awake()
         {
@@ -114,7 +115,11 @@ namespace Bakery
                 _cellUI = null;
                 _hoveredGrid = null;
                 UpdateHighlight();
-                User.Cursor().RemoveOverride();
+                if (_cursorOverriden)
+                {
+                    _cursorOverriden = false;
+                    User.Cursor().RemoveOverride();
+                }
                 return;
             }
 
@@ -122,9 +127,18 @@ namespace Bakery
                 .Grids()
                 .TryGetObjectAt(_cellUI.ContainerInfo, _cellUI.GridCoordinates, out _hoveredGrid);
             if (_hoveredGrid != null)
+            {
+                _cursorOverriden = true;
                 User.Cursor().Override(_interactiveCursorType);
+            }
             else
-                User.Cursor().RemoveOverride();
+            {
+                if (_cursorOverriden)
+                {
+                    _cursorOverriden = false;
+                    User.Cursor().RemoveOverride();
+                }
+            }
             UpdateHighlight();
         }
 

@@ -108,27 +108,23 @@ namespace Bakery
             //Input events are called before the update loop
             _inputProcessed = false;
 
-            if (_hoveredGrid != null && !_hoveredGrid.Locked)
-            {
-                User.Cursor().Override(_interactiveCursorType);
-            }
-            else
-            {
-                User.Cursor().RemoveOverride();
-            }
-
             var hoveredObject = User.Raycast().HoveredObject;
             if (hoveredObject == null || !hoveredObject.TryGetComponent<GridCellUI>(out _cellUI))
             {
                 _cellUI = null;
                 _hoveredGrid = null;
                 UpdateHighlight();
+                User.Cursor().RemoveOverride();
                 return;
             }
 
             Inventory
                 .Grids()
                 .TryGetObjectAt(_cellUI.ContainerInfo, _cellUI.GridCoordinates, out _hoveredGrid);
+            if (_hoveredGrid != null)
+                User.Cursor().Override(_interactiveCursorType);
+            else
+                User.Cursor().RemoveOverride();
             UpdateHighlight();
         }
 

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 namespace Bakery
 {
     public static class Inventory
@@ -19,15 +18,19 @@ namespace Bakery
 
                 public static Action<RotatableGrid> OnItemCreated = delegate { };
             }
+
             public static class Controller
             {
                 public static Action<RotatableGrid, InventoryHand> OnGrabbed = delegate { };
-                public static Action<GridObjectUI, InventoryHand, GridCellUI> OnReleased = delegate { };
+                public static Action<GridObjectUI, InventoryHand, GridCellUI> OnReleased = delegate
+                { };
                 public static Action<RotatableGrid> OnItemRotated = delegate { };
-                public static Action<RotatableGrid, ContainerInfo, Vector2Int,bool> OnHighlight = delegate { };
+                public static Action<RotatableGrid, ContainerInfo, Vector2Int, bool> OnHighlight =
+                    delegate { };
                 public static Action OnCleanHighlight = delegate { };
             }
         }
+
         public static Func<IInventoryGridManager> Grids = UnregisterManager;
 
         private static IInventoryGridManager _dummyManager;
@@ -47,59 +50,64 @@ namespace Bakery
         {
             public CustomYieldInstruction WaitUntilReady => null;
 
-            public bool Place(ContainerInfo inventory, RotatableGrid item)
-            => false;
+            public bool Place(ContainerInfo inventory, RotatableGrid item) => false;
 
-            public void Place(ContainerInfo inventory, List<RotatableGrid> inventoryItems)
-            { }
+            public void Place(ContainerInfo inventory, List<RotatableGrid> inventoryItems) { }
 
+            public IEnumerable<RotatableGrid> GetAllItems(ContainerInfo inventory) =>
+                new List<RotatableGrid>();
 
-            public IEnumerable<RotatableGrid> GetAllItems(ContainerInfo inventory)
-                => new List<RotatableGrid>();
+            public IEnumerable<RotatableGrid> GetItems(
+                ContainerInfo inventory,
+                Predicate<RotatableGrid> predicate
+            ) => new List<RotatableGrid>();
 
-            public IEnumerable<RotatableGrid> GetItems(ContainerInfo inventory, Predicate<RotatableGrid> predicate)
-                => new List<RotatableGrid>();
+            public bool IsItemIn(ContainerInfo inventory, RotatableGrid item) => false;
 
-            public bool IsItemIn(ContainerInfo inventory, RotatableGrid item)
-                => false;
-
-            public bool TryGetObjectAt(ContainerInfo gridInfo,
-                                    Vector2Int position, out RotatableGrid gridObject)
+            public bool TryGetObjectAt(
+                ContainerInfo gridInfo,
+                Vector2Int position,
+                out RotatableGrid gridObject
+            )
             {
                 gridObject = null;
                 return false;
             }
 
-            public bool Remove(RotatableGrid item, ContainerInfo inventory)
-             => false;
+            public bool Remove(RotatableGrid item, ContainerInfo inventory) => false;
 
-            public bool Remove(RotatableGrid item)
-            => false;
+            public bool Remove(RotatableGrid item) => false;
 
-            public void PickUp(RotatableGrid hoveredObject,
-                                int numToGrab, out RotatableGrid pickedUpGrid)
+            public void PickUp(
+                RotatableGrid hoveredObject,
+                int numToGrab,
+                out RotatableGrid pickedUpGrid
+            )
             {
                 pickedUpGrid = null;
                 //noop
-
             }
 
-            public bool TryPlaceAt(RotatableGrid grabbedObject,
-                                    ContainerInfo gridInfo,
-                                    Vector2Int gridCoordinates,
-                                    int numToPlace,
-                                    out int numPlaced)
+            public bool TryPlaceAt(
+                RotatableGrid grabbedObject,
+                ContainerInfo gridInfo,
+                Vector2Int gridCoordinates,
+                int numToPlace,
+                out int numPlaced
+            )
             {
                 numPlaced = 0;
                 //noop
                 return false;
             }
 
-            public bool Create(ContainerInfo inventoryInfo,
-                            GridInfo inventoryItems,
-                            int amount,
-                            bool stackable,
-                            int id = -1)
+            public bool Create(
+                ContainerInfo inventoryInfo,
+                GridInfo inventoryItems,
+                int amount,
+                bool stackable,
+                int id = -1
+            )
             {
                 return false;
             }
@@ -114,11 +122,21 @@ namespace Bakery
                 return true;
             }
 
-            public bool IsPlaceable(RotatableGrid grabbedObject, ContainerInfo containerInfo, Vector2Int gridCoordinates)
+            public bool IsPlaceable(
+                RotatableGrid grabbedObject,
+                ContainerInfo containerInfo,
+                Vector2Int gridCoordinates
+            )
+            {
+                return false;
+            }
+
+            public bool IsPlaceable(GridInfo gridInfo, ContainerInfo containerInfo)
             {
                 return false;
             }
         }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics()
         {

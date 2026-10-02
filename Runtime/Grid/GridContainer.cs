@@ -36,7 +36,7 @@ namespace Bakery
         {
             if (!Compatible(grid))
                 return false;
-            if (FitIn(grid))
+            if (CanFitIn(grid))
             {
                 Grids.AddUnique(grid);
                 Inventory.Events.Grids.OnItemAdded?.Invoke(this, grid);
@@ -82,7 +82,7 @@ namespace Bakery
         )
         {
             numReleased = 0;
-            if (!FitIn(grabbedObject, gridCoordinates, grabbedObject.Rotation))
+            if (!CanFitIn(grabbedObject, gridCoordinates, grabbedObject.Rotation))
                 return false;
             if (numToRelease != -1 && numToRelease < grabbedObject.Amount)
             {
@@ -101,15 +101,21 @@ namespace Bakery
             return true;
         }
 
-        public bool FitIn(RotatableGrid grid)
+        public bool CanFitIn(GridInfo gridInfo)
+        {
+            RotatableGrid grid = new(gridInfo);
+            return CanFitIn(grid);
+        }
+
+        public bool CanFitIn(RotatableGrid grid)
         {
             foreach (var coordinate in ContainerInfo.Coordinates)
-                if (FitIn(grid, coordinate))
+                if (CanFitIn(grid, coordinate))
                     return true;
             return false;
         }
 
-        public bool FitIn(RotatableGrid grid, Vector2Int coordinate, int rotation = 0)
+        public bool CanFitIn(RotatableGrid grid, Vector2Int coordinate, int rotation = 0)
         {
             grid.RootPosition = coordinate;
             grid.Rotation = rotation;
@@ -131,19 +137,19 @@ namespace Bakery
             return false;
         }
 
-        public bool FitIn(RotatableGrid grid, Vector2Int coordinate)
+        public bool CanFitIn(RotatableGrid grid, Vector2Int coordinate)
         {
             grid.RootPosition = coordinate;
 
             for (int rotation = 0; rotation < 4; rotation++)
             {
-                if (FitIn(grid, rotation))
+                if (CanFitIn(grid, rotation))
                     return true;
             }
             return false;
         }
 
-        public bool FitIn(RotatableGrid grid, int rotation)
+        public bool CanFitIn(RotatableGrid grid, int rotation)
         {
             grid.Rotation = rotation;
 

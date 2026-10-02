@@ -221,7 +221,7 @@ namespace Bakery
             var objectCopy = new RotatableGrid(grabbedObject);
             foreach (var container in _containers)
             {
-                if (container.FitIn(objectCopy, grabbedObject.RootPosition))
+                if (container.CanFitIn(objectCopy, grabbedObject.RootPosition))
                 {
                     inventory = container.ContainerInfo;
                     return true;
@@ -242,7 +242,7 @@ namespace Bakery
             if (inventory.CanStack(objectCopy, gridCoordinates))
                 return true;
 
-            return inventory.FitIn(objectCopy, gridCoordinates, objectCopy.Rotation);
+            return inventory.CanFitIn(objectCopy, gridCoordinates, objectCopy.Rotation);
         }
 
         public void PickUp(
@@ -295,11 +295,20 @@ namespace Bakery
                 return false;
 
             return inventory.CanStack(grabbedObject, gridCoordinates)
-                || inventory.FitIn(
+                || inventory.CanFitIn(
                     new RotatableGrid(grabbedObject),
                     gridCoordinates,
                     grabbedObject.Rotation
                 );
+        }
+
+        public bool IsPlaceable(GridInfo gridInfo, ContainerInfo containerInfo)
+        {
+            var inventory = GetInventory(containerInfo);
+            if (inventory == null)
+                return false;
+
+            return inventory.CanFitIn(gridInfo);
         }
     }
 }

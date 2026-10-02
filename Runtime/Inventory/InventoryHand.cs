@@ -1,14 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 using UnityEngine;
 
 namespace Bakery
 {
     public class InventoryHand : MonoBehaviour, ICursorAttachable
     {
-        [SerializeField] bool _showOutsideUI;
+        [SerializeField]
+        bool _showOutsideUI;
 
         public bool ShowOutsideGUI => _showOutsideUI;
 
@@ -26,10 +26,8 @@ namespace Bakery
 
         internal void Grab(GridObjectUI gridObjectUI)
         {
-            if (GrabbedObject != null &&
-                GrabbedObject != gridObjectUI)
+            if (GrabbedObject != null && GrabbedObject != gridObjectUI)
                 throw new InvalidOperationException("Hand is already holding an object.");
-
 
             gridObjectUI.Grab();
             gridObjectUI.Visibility = false;
@@ -42,8 +40,10 @@ namespace Bakery
             yield return new WaitForEndOfFrame();
 
             gridObjectUI.transform.SetParent(this.transform, true);
-            gridObjectUI.transform.localPosition =
-                new Vector2(-gridObjectUI.Size.x / 2, gridObjectUI.Size.y);
+            gridObjectUI.transform.localPosition = new Vector2(
+                -gridObjectUI.Size.x / 2,
+                gridObjectUI.Size.y
+            );
             yield return null;
             GrabbedObject = gridObjectUI;
         }
@@ -60,18 +60,27 @@ namespace Bakery
 
         internal bool CanGrab(RotatableGrid hoveredObject)
         {
-            if (hoveredObject == null || hoveredObject.Locked) return false;
-            if (GrabbedObject == null) return true;
-            if (GrabbedObject.Grid != hoveredObject) return false;
+            if (hoveredObject == null || hoveredObject.Locked)
+                return false;
+            if (GrabbedObject == null)
+                return true;
 
-            if (GrabbedObject.FullStack) return false;
+            if (GrabbedObject.Grid.GridInfo != hoveredObject.GridInfo)
+                return false;
+
+            if (!GrabbedObject.Grid.Stackable || !hoveredObject.Stackable)
+                return false;
+
+            if (GrabbedObject.FullStack)
+                return false;
 
             return true;
         }
 
         internal void ModifyStack(int amount)
         {
-            if (GrabbedObject == null) return;
+            if (GrabbedObject == null)
+                return;
             GrabbedObject.Grid.Amount += amount;
             GrabbedObject.UpdateStack();
             if (GrabbedObject.Grid.Amount <= 0)
@@ -80,22 +89,27 @@ namespace Bakery
 
         internal int NumCanGrab(RotatableGrid hoveredObject, int numToGrab)
         {
-            if (hoveredObject == null) return 0;
-            if (GrabbedObject == null) return numToGrab;
-            if (GrabbedObject.Grid != hoveredObject) return 0;
+            if (hoveredObject == null)
+                return 0;
+            if (GrabbedObject == null)
+                return numToGrab;
+            if (GrabbedObject.Grid != hoveredObject)
+                return 0;
 
             return Math.Min(numToGrab, GrabbedObject.MaxStack - GrabbedObject.Stack);
         }
 
         internal bool Hovering(RectTransform rectTransform)
         {
-            if (IsEmpty) return false;
+            if (IsEmpty)
+                return false;
             return GrabbedObject.Overlaps(rectTransform);
         }
 
         void Update()
         {
-            if (IsEmpty) return;
+            if (IsEmpty)
+                return;
             if (_showOutsideUI)
                 GrabbedObject.Visibility = true;
             else

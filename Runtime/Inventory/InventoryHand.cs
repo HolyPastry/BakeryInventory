@@ -93,7 +93,9 @@ namespace Bakery
                 return 0;
             if (GrabbedObject == null)
                 return numToGrab;
-            if (GrabbedObject.Grid != hoveredObject)
+            if (GrabbedObject.Grid.GridInfo != hoveredObject.GridInfo)
+                return 0;
+            if (!GrabbedObject.Grid.Stackable || !hoveredObject.Stackable)
                 return 0;
 
             return Math.Min(numToGrab, GrabbedObject.MaxStack - GrabbedObject.Stack);

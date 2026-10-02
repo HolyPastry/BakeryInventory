@@ -335,9 +335,19 @@ namespace Bakery
         internal bool IsPlaceable(RotatableGrid grid)
         {
             var amountThatCannotBeStacked = AmountThatCannotBeStacked(grid);
+            if (amountThatCannotBeStacked <= 0)
+                return true;
+            var maxStackableAmount = grid.Stackable ? grid.GridInfo.StackCapacity : 1;
+            bool canFit = true;
+            while (amountThatCannotBeStacked > 0)
+            {
+                var stackAmount = Math.Min(amountThatCannotBeStacked, maxStackableAmount);
 
-            var gridCopy = new RotatableGrid(grid) { Amount = amountThatCannotBeStacked };
-            return CanFitIn(gridCopy);
+                var gridCopy = new RotatableGrid(grid) { Amount = stackAmount };
+                canFit &= CanFitIn(gridCopy);
+                amountThatCannotBeStacked -= stackAmount;
+            }
+            return canFit;
         }
     }
 }

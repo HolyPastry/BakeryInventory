@@ -135,6 +135,11 @@ namespace Bakery
             {
                 return false;
             }
+
+            public bool IsPlaceable(RotatableGrid grid, ContainerInfo containerInfo)
+            {
+                return false;
+            }
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

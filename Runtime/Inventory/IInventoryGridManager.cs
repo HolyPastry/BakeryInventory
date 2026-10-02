@@ -47,6 +47,7 @@ namespace Bakery
             ContainerInfo containerInfo,
             Vector2Int gridCoordinates
         );
-        bool IsPlaceable(GridInfo gridInfo, ContainerInfo containerInfo);
+
+        bool IsPlaceable(RotatableGrid grid, ContainerInfo containerInfo);
     }
 }

@@ -122,6 +122,18 @@ namespace Bakery
             return !IsOutsideGrid(grid) && OverlapsExisting(grid);
         }
 
+        public bool CanStack(RotatableGrid grid) => StackableAmount(grid) <= 0;
+
+        public int StackableAmount(RotatableGrid grid)
+        {
+            int amountToStack = grid.Amount;
+            foreach (var otherItem in Grids)
+            {
+                amountToStack -= otherItem.CanStackAmount(grid);
+            }
+            return amountToStack;
+        }
+
         public bool CanStack(RotatableGrid grid, Vector2Int coordinate)
         {
             foreach (var otherItem in Grids)
@@ -318,6 +330,13 @@ namespace Bakery
                 }
             }
             return amount == 0;
+        }
+
+        internal bool IsPlaceable(RotatableGrid grid)
+        {
+            var amountThatCannotBeStacked = StackableAmount(grid);
+            var gridCopy = new RotatableGrid(grid) { Amount = amountThatCannotBeStacked };
+            return CanFitIn(gridCopy);
         }
     }
 }

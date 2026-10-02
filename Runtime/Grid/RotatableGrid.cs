@@ -137,5 +137,12 @@ namespace Bakery
         {
             return HashCode.Combine(GridInfo, RootPosition, Rotation, Amount, Stackable);
         }
+
+        internal int CanStackAmount(RotatableGrid grid)
+        {
+            if (!CanStackWith(grid))
+                return 0;
+            return GridInfo.StackCapacity - Amount;
+        }
     }
 }

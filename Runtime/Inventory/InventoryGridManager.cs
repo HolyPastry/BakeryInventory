@@ -269,19 +269,8 @@ namespace Bakery
             out int numReleased
         )
         {
-            var inventory = GetInventory(inventoryInfo);
-            if (inventory == null)
-            {
-                numReleased = 0;
-                return false;
-            }
-
-            return inventory.TryPlaceAt(
-                grabbedObject,
-                gridCoordinates,
-                numToRelease,
-                out numReleased
-            );
+            return GetInventory(inventoryInfo)
+                .TryPlaceAt(grabbedObject, gridCoordinates, numToRelease, out numReleased);
         }
 
         public bool IsPlaceable(
@@ -291,8 +280,6 @@ namespace Bakery
         )
         {
             var inventory = GetInventory(containerInfo);
-            if (inventory == null)
-                return false;
 
             return inventory.CanStack(grabbedObject, gridCoordinates)
                 || inventory.CanFitIn(
@@ -302,13 +289,7 @@ namespace Bakery
                 );
         }
 
-        public bool IsPlaceable(GridInfo gridInfo, ContainerInfo containerInfo)
-        {
-            var inventory = GetInventory(containerInfo);
-            if (inventory == null)
-                return false;
-
-            return inventory.CanFitIn(gridInfo);
-        }
+        public bool IsPlaceable(RotatableGrid grid, ContainerInfo containerInfo) =>
+            GetInventory(containerInfo).IsPlaceable(grid);
     }
 }

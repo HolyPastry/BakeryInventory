@@ -140,7 +140,7 @@ namespace Bakery
 
         internal int CanStackAmount(RotatableGrid grid)
         {
-            if (!CanStackWith(grid))
+            if (grid.GridInfo != GridInfo || !grid.Stackable || !Stackable)
                 return 0;
             return GridInfo.StackCapacity - Amount;
         }

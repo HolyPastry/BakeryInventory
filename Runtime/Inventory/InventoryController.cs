@@ -211,14 +211,23 @@ namespace Bakery
 
         private void OnGrabOne(InputAction.CallbackContext context)
         {
-            if (_inputProcessed || _hoveredGrid == null)
+            if (_inputProcessed)
                 return;
 
-            if (!_hand.CanGrab(_hoveredGrid))
-                return;
-
-            if (Grab(_hoveredGrid, 1))
+            if (_hoveredGrid != null && _hand.CanGrab(_hoveredGrid) && Grab(_hoveredGrid, 1))
+            {
                 _inputProcessed = true;
+                return;
+            }
+
+            if (GrabbedObject == null)
+                return;
+
+            if (_trashes != null && _trashes.Any(t => t.IsHovering))
+                Trash(GrabbedObject, 1);
+            else
+                Release(GrabbedObject, 1);
+            _inputProcessed = true;
         }
 
         private void OnGrabAll(InputAction.CallbackContext context)

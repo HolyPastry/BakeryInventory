@@ -140,6 +140,11 @@ namespace Bakery
             {
                 return false;
             }
+
+            public void Save(ContainerInfo containerInfo)
+            {
+                //noop
+            }
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

@@ -291,5 +291,10 @@ namespace Bakery
 
         public bool IsPlaceable(RotatableGrid grid, ContainerInfo containerInfo) =>
             GetInventory(containerInfo).IsPlaceable(grid);
+
+        public void Save(ContainerInfo containerInfo)
+        {
+            GetInventory(containerInfo).Save();
+        }
     }
 }

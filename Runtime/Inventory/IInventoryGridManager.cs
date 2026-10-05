@@ -49,5 +49,7 @@ namespace Bakery
         );
 
         bool IsPlaceable(RotatableGrid grid, ContainerInfo containerInfo);
+
+        void Save(ContainerInfo containerInfo);
     }
 }

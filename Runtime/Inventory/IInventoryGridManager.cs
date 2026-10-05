@@ -50,6 +50,6 @@ namespace Bakery
 
         bool IsPlaceable(RotatableGrid grid, ContainerInfo containerInfo);
 
-        void Save(ContainerInfo containerInfo);
+        void SetStackable(RotatableGrid grid, bool stackable);
     }
 }

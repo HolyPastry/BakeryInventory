@@ -83,8 +83,7 @@ namespace Bakery
         {
             _grid.Grabbed = true;
             _hiddable.SetActive(false);
-            //UpdateGrid(Grid);
-            // _hiddable.SetActive(true);
+
             StopAllCoroutines();
             StartCoroutine(LateUpdateGridRoutine(Grid));
         }

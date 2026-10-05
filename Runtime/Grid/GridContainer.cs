@@ -349,5 +349,11 @@ namespace Bakery
             }
             return canFit;
         }
+
+        internal void SetStackable(RotatableGrid grid, bool stackable)
+        {
+            grid.Stackable = stackable;
+            Save();
+        }
     }
 }

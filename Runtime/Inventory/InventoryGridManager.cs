@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Bakery.Core;
 using Bakery.Saves;
 using UnityEngine;
@@ -295,6 +294,18 @@ namespace Bakery
         public void Save(ContainerInfo containerInfo)
         {
             GetInventory(containerInfo).Save();
+        }
+
+        public void SetStackable(RotatableGrid grid, bool stackable)
+        {
+            var inventory = _containers.Find(i => i.Grids.Contains(grid));
+            if (inventory == null)
+            {
+                Debug.LogWarning($"Could not find inventory holding {grid.GridInfo.name}");
+                return;
+            }
+
+            inventory.SetStackable(grid, stackable);
         }
     }
 }

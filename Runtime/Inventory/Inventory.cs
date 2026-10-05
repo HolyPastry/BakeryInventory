@@ -16,6 +16,8 @@ namespace Bakery
 
                 public static Action<RotatableGrid, int> OnItemStackModified = delegate { };
 
+                public static Action<RotatableGrid> OnItemUpdated = delegate { };
+
                 public static Action<RotatableGrid> OnItemCreated = delegate { };
             }
 
@@ -141,7 +143,7 @@ namespace Bakery
                 return false;
             }
 
-            public void Save(ContainerInfo containerInfo)
+            public void SetStackable(RotatableGrid grid, bool stackable)
             {
                 //noop
             }

@@ -352,7 +352,10 @@ namespace Bakery
 
         internal void SetStackable(RotatableGrid grid, bool stackable)
         {
+            if (grid.Stackable == stackable)
+                return;
             grid.Stackable = stackable;
+            Inventory.Events.Grids.OnItemUpdated?.Invoke(ContainerInfo, grid);
             Save();
         }
     }

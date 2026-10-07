@@ -317,6 +317,7 @@ namespace Bakery
                 _hand.ModifyStack(pickedUpObject.Amount);
             }
             OnGrab.Invoke(pickedUpObject);
+            Inventory.Events.Controller.OnGrabbed?.Invoke(pickedUpObject, _hand);
             return true;
         }
 

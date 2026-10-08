@@ -150,7 +150,7 @@ namespace Bakery
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics()
+        public static void ResetStatics()
         {
             Events.Controller.OnCleanHighlight = delegate { };
             Events.Controller.OnHighlight = delegate { };
@@ -159,7 +159,9 @@ namespace Bakery
             Events.Controller.OnReleased = delegate { };
 
             Events.Grids.OnItemAdded = delegate { };
-            // Events.Grids.OnItemPlaced = delegate { };
+            Events.Grids.OnItemCreated = delegate { };
+            Events.Grids.OnItemStackModified = delegate { };
+            Events.Grids.OnItemUpdated = delegate { };
             Events.Grids.OnItemRemoved = delegate { };
 
             Grids = UnregisterManager;

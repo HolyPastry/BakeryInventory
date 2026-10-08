@@ -196,7 +196,11 @@ namespace Bakery
             var serialInventory = GetInventory(inventoryInfo);
             foreach (var item in serialInventory.Grids)
             {
-                if (item.GridInfo == inventoryItem && item.Amount < item.GridInfo.StackCapacity)
+                if (
+                    item.GridInfo == inventoryItem
+                    && item.Stackable
+                    && item.Amount < item.GridInfo.StackCapacity
+                )
                 {
                     item.Amount++;
                     Inventory.Events.Grids.OnItemStackModified?.Invoke(item, 1);
